@@ -1,12 +1,15 @@
 package code;
 
+import java.awt.Canvas;
 import java.io.*;
 import java.util.Scanner;
 import java.nio.ByteBuffer;
+
 import javax.swing.JFrame;
 // Highest possible value for byte:	0x7F --> 127
 // Lowest possible value for byte:	-0x80 --> -128
 // To use higher values, cast to byte -->  array[0] = (byte) 0xFF
+
 
 
 import utils.TwoWayMap;
@@ -17,7 +20,9 @@ public class ServerMain
 	private static Rover hal;
 	private static final String ADDRESS = "Medallion";
 	private static TwoWayMap<HeaderType, Byte> HeaderMap = new TwoWayMap<HeaderType, Byte>();	// map byte values to strings for easy encoding and decoding
-	private static Keyboard keyboard = new Keyboard();
+	private static Keyboard keyboard;
+	private static Canvas canvas;
+	private static JFrame frame;
 	
 	
     public static void main(String[] args) throws IOException 
@@ -26,8 +31,11 @@ public class ServerMain
     	hal = new Rover();
     	initializeHeaderMap();	// initialize map of header byte values
     	com = new CommonData();	// initialize common data
+    	keyboard = new Keyboard();
+    	canvas = new Canvas();
+    	frame = new JFrame();
     	
-    	addKeyListener(keyboard);	// need to figure this out!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    	canvas.addKeyListener(keyboard);	// need to figure this out!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	
     	Scanner reader = new Scanner(System.in);
     	
@@ -36,6 +44,14 @@ public class ServerMain
     	input.start();
     	BroadcastThread output = new BroadcastThread(com, ADDRESS);
     	output.start();
+    	
+    	frame.setResizable(false);//resizing can cause graphics errors, make sure to do first
+        frame.setTitle("Rover Base Station");
+        frame.add(canvas);//adds instance of game to the window (can add because subclass of canvas)
+        frame.pack();//set size of frame based on component (canvas size)
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed
+        frame.setLocationRelativeTo(null);//centers window in middle of screen
+        frame.setVisible(true);//makes sure window can be seen
     	
     	// logic stuff
     	boolean running = true;
@@ -88,6 +104,29 @@ public class ServerMain
     	System.out.println("ServerMain shutting down, goodbye.");
     }
     
+    //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?
+    private static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
+    {
+    	ByteBuffer buffer = ByteBuffer.allocate(3);	// three bytes
+    	buffer.put(HeaderMap.getByte(header));
+    	buffer.putShort(data);
+    	buffer.flip();
+    	
+    	com.addPacketToSend(buffer.array());
+    }
+    private static void createPacket(String header, int data){}
+    
+    // input stuffs
+    private static void update()
+    {
+    	keyboard.update();
+    	if(keyboard.up)
+    	{
+    		createPacket(HeaderType.armTurretCommand, (short) 23 );
+    		System.out.println("creating packet");
+    	}
+    }
+    
     private static void initializeHeaderMap()	// set up map of strings to byte values
     {
     	
@@ -138,29 +177,6 @@ public class ServerMain
     	HeaderMap.put(HeaderType.misc, new Byte((byte) 0x70));
     	
     	
-    }
-    
-    //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?
-    private static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
-    {
-    	ByteBuffer buffer = ByteBuffer.allocate(3);	// three bytes
-    	buffer.put(HeaderMap.getByte(header));
-    	buffer.putShort(data);
-    	buffer.flip();
-    	
-    	com.addPacketToSend(buffer.array());
-    }
-    private static void createPacket(String header, int data){}
-    
-    // input stuffs
-    private static void update()
-    {
-    	keyboard.update();
-    	if(keyboard.up)
-    	{
-    		createPacket(HeaderType.armTurretCommand, (short) 23 );
-    		System.out.println("creating packet");
-    	}
     }
     
 }
