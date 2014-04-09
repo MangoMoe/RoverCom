@@ -1,47 +1,100 @@
 package code;
 
+import java.awt.Canvas;
+import java.awt.Dimension;
 import java.io.*;
 import java.util.Scanner;
 import java.nio.ByteBuffer;
 import javax.swing.JFrame;
-// Highest possible value for byte:	0x7F --> 127
-// Lowest possible value for byte:	-0x80 --> -128
-// To use higher values, cast to byte -->  array[0] = (byte) 0xFF
-
 
 import utils.TwoWayMap;
 
-public class ServerMain 
+//Highest possible value for byte:	0x7F --> 127
+//Lowest possible value for byte:	-0x80 --> -128
+//To use higher values, cast to byte -->  array[0] = (byte) 0xFF
+
+public class ServerMain implements Runnable
 {
-	private static CommonData com;	// must be static for some reason
-	private static Rover hal;
 	private static final String ADDRESS = "Medallion";
+	
+	// Threads
+	InputThread input;
+	BroadcastThread output;
+	
+	// Logic
+	private static CommonData com;	// must be static for some reason
+	private Rover hal;
 	private static TwoWayMap<HeaderType, Byte> HeaderMap = new TwoWayMap<HeaderType, Byte>();	// map byte values to strings for easy encoding and decoding
-	private static Keyboard keyboard = new Keyboard();
 	
+	// Structure/required to run
+	private Keyboard keyboard;
+	private Canvas canvas;
+	private JFrame frame;
+	private Thread thread;
+	private boolean running = false;
 	
-    public static void main(String[] args) throws IOException 
-    {
-    	// setup
+	public ServerMain()
+	{
+		// setup
     	hal = new Rover();
     	initializeHeaderMap();	// initialize map of header byte values
     	com = new CommonData();	// initialize common data
+    	keyboard = new Keyboard();
+    	canvas = new Canvas();
+    	frame = new JFrame();
     	
-    	addKeyListener(keyboard);	// need to figure this out!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    	canvas.addKeyListener(keyboard);	// add listener to take keyboard input
+    	Dimension size = new Dimension(600, 300);
+    	//^^^^^^ replace with pre-defined values
+    	canvas.setPreferredSize(size);
+	}
+	
+	public synchronized void start()
+	{
+		try
+		{
+			// Start Threads
+			input = new InputThread(com);
+			input.start();
+			output = new BroadcastThread(com, ADDRESS);
+			output.start();
+			
+			// Graphics type threads
+			running = true;
+			thread = new Thread(this, "Display"); //new thread to hold gui
+	        thread.start();
+		} catch(IOException e)
+		{
+			System.out.println("ServerMain had an IO exception while trying to start threads");
+			e.printStackTrace();
+		}
+	}
+	
+	public synchronized void stop()
+	{
+		running = false;
+		
+		input.interrupt();	// interrupt the inputThread to shut it down
+    	output.interrupt();
     	
-    	Scanner reader = new Scanner(System.in);
-    	
-    	// start threads
-    	InputThread input = new InputThread(com);
-    	input.start();
-    	BroadcastThread output = new BroadcastThread(com, ADDRESS);
-    	output.start();
-    	
-    	// logic stuff
-    	boolean running = true;
-    	long lastTime = System.nanoTime(); //uses nanoseconds, more precise than current time in milliseconds
+    	try {
+			input.join();	// wait for other threads to close
+			output.join();
+			thread.join();
+		} catch (InterruptedException e) {
+			System.out.println("ServerMain interrupted while attempting to join threads");
+			e.printStackTrace();
+		}
+    	System.out.println("ServerMain shutting down, goodbye.");
+	}
+	
+    public void run() //WizardBall implements runnable, so when thread started, run method runs
+    { 
+        long lastTime = System.nanoTime(); //uses nanoseconds, more precise than current time in milliseconds
+        long timer = System.currentTimeMillis(); //timer variable for fps counter
         final double ns = 1000000000.0 / 60.0; //use this variable to ensure 60 times a second
         double delta = 0.0;
+        int frames = 0, updates = 0; //first is how many frames per second, second should be 60 updates per second
         while (running) //loops while game going. two parts: graphical and logical
         { 
             long now = System.nanoTime();
@@ -50,42 +103,63 @@ public class ServerMain
             while(delta >= 1)
             {
                 update();
+                updates++;
                 delta--;
-            } //limited to updating 60 times per second ---> THIS WILL MAKE SENDING CONTINUOUS STUFF EASIER
+            } //limited to updating 60 times per second
+            //render(); //unlimited updating, called as many times as possible
+//unlimited rendering???
+            frames++; //increment number of frames per second
+            
+            
+            if(System.currentTimeMillis() - timer > 1000) //if 1 second has passed
+            {
+                timer += 1000;//reset timer
+                //System.out.println(updates + " ups, " + frames + " fps");//display fps and updates per second
+                frame.setTitle("Rover Time!" + "    |   " + updates + " ups, " + frames + " fps");//display title of program and fps counter
+                frames = 0;
+                updates = 0;
+            }
         }
+        stop();
+    }
+	
+    public static void main(String[] args)
+    {
+    	// instantiate new instance of this class
+    	ServerMain Interface = new ServerMain();	// come up with better name?
     	
-    	reader.nextLine();	// wait for some input on console
+    	Interface.frame.setResizable(false);//resizing can cause graphics errors, make sure to do first
+        Interface.frame.setTitle("Rover Base Station");
+        Interface.frame.add(Interface.canvas);//adds instance of game to the window (can add because subclass of canvas)
+        Interface.frame.pack();//set size of Interface.frame based on component (canvas size)
+        Interface.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed
+        Interface.frame.setLocationRelativeTo(null);//centers window in middle of screen
+        Interface.frame.setVisible(true);//makes sure window can be seen
     	
-    	/*byte[] test = com.popRecievedPacket();	// get first recieved packet (or null)
-    	while(test != null)						// loop through other packets in recieved packets queue
+    	Interface.start();
+    }
+    
+    //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?
+    private static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
+    {
+    	ByteBuffer buffer = ByteBuffer.allocate(3);	// three bytes
+    	buffer.put(HeaderMap.getByte(header));
+    	buffer.putShort(data);
+    	buffer.flip();
+    	
+    	com.addPacketToSend(buffer.array());
+    }
+    private static void createPacket(String header, int data){}
+    
+    // input stuffs
+    private void update()
+    {
+    	keyboard.update();
+    	if(keyboard.up)
     	{
-    		test[0] = (byte) 0xFF;
-    		com.addPacketToSend(test);
-    		test = com.popRecievedPacket();
-    	}*/
-    	createPacket("arm turret command", (short)19);
-    	createPacket("drive 1", (short)226);
-    	try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-    	
-    	// Shutdown stuff
-    	
-    	input.interrupt();	// interrupt the inputThread to shut it down
-    	output.interrupt();
-    	
-    	try {
-			input.join();	// wait for other threads to close
-			output.join();
-		} catch (InterruptedException e) {
-			System.out.println("ServerMain interrupted while attempting to join threads");
-			e.printStackTrace();
-		}
-    	
-    	reader.close();
-    	System.out.println("ServerMain shutting down, goodbye.");
+    		createPacket(HeaderType.armTurretCommand, (short) 23 );
+    		System.out.println("creating packet");
+    	}
     }
     
     private static void initializeHeaderMap()	// set up map of strings to byte values
@@ -138,29 +212,6 @@ public class ServerMain
     	HeaderMap.put(HeaderType.misc, new Byte((byte) 0x70));
     	
     	
-    }
-    
-    //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?
-    private static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
-    {
-    	ByteBuffer buffer = ByteBuffer.allocate(3);	// three bytes
-    	buffer.put(HeaderMap.getByte(header));
-    	buffer.putShort(data);
-    	buffer.flip();
-    	
-    	com.addPacketToSend(buffer.array());
-    }
-    private static void createPacket(String header, int data){}
-    
-    // input stuffs
-    private static void update()
-    {
-    	keyboard.update();
-    	if(keyboard.up)
-    	{
-    		createPacket(HeaderType.armTurretCommand, (short) 23 );
-    		System.out.println("creating packet");
-    	}
     }
     
 }
