@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.io.*;
 import java.util.Scanner;
 import java.nio.ByteBuffer;
+
 import javax.swing.JFrame;
 
 import utils.TwoWayMap;
@@ -15,7 +16,7 @@ import utils.TwoWayMap;
 
 public class ServerMain implements Runnable
 {
-	private static final String ADDRESS = "Medallion";
+	private static String address = "Medallion";	// default address
 	
 	// Threads
 	InputThread input;
@@ -47,6 +48,12 @@ public class ServerMain implements Runnable
     	Dimension size = new Dimension(600, 300);
     	//^^^^^^ replace with pre-defined values
     	canvas.setPreferredSize(size);
+    	
+    	Scanner reader = new Scanner(System.in);	// initialize some stuff
+    	
+    	System.out.println("Enter name (ex HAL1) or ip address of host to broadcast to: ");
+		address = reader.nextLine();
+		
 	}
 	
 	public synchronized void start()
@@ -56,7 +63,7 @@ public class ServerMain implements Runnable
 			// Start Threads
 			input = new InputThread(com);
 			input.start();
-			output = new BroadcastThread(com, ADDRESS);
+			output = new BroadcastThread(com, address);
 			output.start();
 			
 			// Graphics type threads
@@ -158,6 +165,11 @@ public class ServerMain implements Runnable
     	if(keyboard.up)
     	{
     		createPacket(HeaderType.armTurretCommand, (short) 23 );
+    		System.out.println("creating packet");
+    	}
+    	if(keyboard.down)
+    	{
+    		createPacket(HeaderType.driveAll, (short) 56 );
     		System.out.println("creating packet");
     	}
     }
