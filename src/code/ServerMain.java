@@ -140,7 +140,7 @@ public class ServerMain implements Runnable
     }
     
     //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?
-    private static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
+    public static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
     {
     	ByteBuffer buffer = ByteBuffer.allocate(3);	// three bytes
     	buffer.put(HeaderMap.getByte(header));
@@ -149,7 +149,15 @@ public class ServerMain implements Runnable
     	
     	com.addPacketToSend(buffer.array());
     }
-    private static void createPacket(String header, int data){}
+    public static void createPacket(HeaderType header, int data)
+    {
+    	ByteBuffer buffer = ByteBuffer.allocate(5);	// 5 bytes
+    	buffer.put(HeaderMap.getByte(header));
+    	buffer.putInt(data);
+    	buffer.flip();
+    	
+    	com.addPacketToSend(buffer.array());
+    }
     
     // input stuffs
     private void update()
