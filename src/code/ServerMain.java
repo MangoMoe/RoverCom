@@ -2,9 +2,9 @@ package code;
 
 import java.awt.Canvas;
 import java.awt.Dimension;
-import java.io.*;
-import java.util.Scanner;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 
@@ -170,16 +170,6 @@ public class ServerMain implements Runnable
     private void update()
     {
     	keyboard.update();
-    	if(keyboard.up)
-    	{
-    		createPacket(HeaderType.armTurretCommand, (short) 23 );
-    		System.out.println("creating packet");
-    	}
-    	if(keyboard.down)
-    	{
-    		createPacket(HeaderType.driveAll, (short) 56 );
-    		System.out.println("creating packet");
-    	}
     }
     
     private static void initializeHeaderMap()	// set up map of strings to byte values

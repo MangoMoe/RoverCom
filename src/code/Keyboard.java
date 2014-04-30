@@ -3,8 +3,6 @@ package code;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
 
 
@@ -61,8 +59,11 @@ public class Keyboard implements KeyListener
         {
         	if(keys[i])
         	{
-        		ServerMain.createPacket(headers[i], values[i]);
-        		//System.out.println("Creating packet for " + KeyEvent.getKeyText(i));
+        		if(headers[i] != null)	// only create packets for defined header values
+        		{
+        			ServerMain.createPacket(headers[i], values[i]);
+        			//System.out.println("Creating packet for " + KeyEvent.getKeyText(i));
+        		}
         	}
         }
         
