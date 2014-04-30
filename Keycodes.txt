@@ -1,0 +1,201 @@
+Keycode: 0 Key value: Unknown keyCode: 0x0
+Keycode: 1 Key value: Unknown keyCode: 0x1
+Keycode: 2 Key value: Unknown keyCode: 0x2
+Keycode: 3 Key value: Cancel
+Keycode: 4 Key value: Unknown keyCode: 0x4
+Keycode: 5 Key value: Unknown keyCode: 0x5
+Keycode: 6 Key value: Unknown keyCode: 0x6
+Keycode: 7 Key value: Unknown keyCode: 0x7
+Keycode: 8 Key value: Backspace
+Keycode: 9 Key value: Tab
+Keycode: 10 Key value: Enter
+Keycode: 11 Key value: Unknown keyCode: 0xb
+Keycode: 12 Key value: Clear
+Keycode: 13 Key value: Unknown keyCode: 0xd
+Keycode: 14 Key value: Unknown keyCode: 0xe
+Keycode: 15 Key value: Unknown keyCode: 0xf
+Keycode: 16 Key value: Shift
+Keycode: 17 Key value: Ctrl
+Keycode: 18 Key value: Alt
+Keycode: 19 Key value: Pause
+Keycode: 20 Key value: Caps Lock
+Keycode: 21 Key value: Kana
+Keycode: 22 Key value: Unknown keyCode: 0x16
+Keycode: 23 Key value: Unknown keyCode: 0x17
+Keycode: 24 Key value: Final
+Keycode: 25 Key value: Kanji
+Keycode: 26 Key value: Unknown keyCode: 0x1a
+Keycode: 27 Key value: Escape
+Keycode: 28 Key value: Convert
+Keycode: 29 Key value: No Convert
+Keycode: 30 Key value: Accept
+Keycode: 31 Key value: Mode Change
+Keycode: 32 Key value: Space
+Keycode: 33 Key value: Page Up
+Keycode: 34 Key value: Page Down
+Keycode: 35 Key value: End
+Keycode: 36 Key value: Home
+Keycode: 37 Key value: Left
+Keycode: 38 Key value: Up
+Keycode: 39 Key value: Right
+Keycode: 40 Key value: Down
+Keycode: 41 Key value: Unknown keyCode: 0x29
+Keycode: 42 Key value: Unknown keyCode: 0x2a
+Keycode: 43 Key value: Unknown keyCode: 0x2b
+Keycode: 44 Key value: Comma
+Keycode: 45 Key value: Minus
+Keycode: 46 Key value: Period
+Keycode: 47 Key value: Slash
+Keycode: 48 Key value: 0
+Keycode: 49 Key value: 1
+Keycode: 50 Key value: 2
+Keycode: 51 Key value: 3
+Keycode: 52 Key value: 4
+Keycode: 53 Key value: 5
+Keycode: 54 Key value: 6
+Keycode: 55 Key value: 7
+Keycode: 56 Key value: 8
+Keycode: 57 Key value: 9
+Keycode: 58 Key value: Unknown keyCode: 0x3a
+Keycode: 59 Key value: Semicolon
+Keycode: 60 Key value: Unknown keyCode: 0x3c
+Keycode: 61 Key value: Equals
+Keycode: 62 Key value: Unknown keyCode: 0x3e
+Keycode: 63 Key value: Unknown keyCode: 0x3f
+Keycode: 64 Key value: Unknown keyCode: 0x40
+Keycode: 65 Key value: A
+Keycode: 66 Key value: B
+Keycode: 67 Key value: C
+Keycode: 68 Key value: D
+Keycode: 69 Key value: E
+Keycode: 70 Key value: F
+Keycode: 71 Key value: G
+Keycode: 72 Key value: H
+Keycode: 73 Key value: I
+Keycode: 74 Key value: J
+Keycode: 75 Key value: K
+Keycode: 76 Key value: L
+Keycode: 77 Key value: M
+Keycode: 78 Key value: N
+Keycode: 79 Key value: O
+Keycode: 80 Key value: P
+Keycode: 81 Key value: Q
+Keycode: 82 Key value: R
+Keycode: 83 Key value: S
+Keycode: 84 Key value: T
+Keycode: 85 Key value: U
+Keycode: 86 Key value: V
+Keycode: 87 Key value: W
+Keycode: 88 Key value: X
+Keycode: 89 Key value: Y
+Keycode: 90 Key value: Z
+Keycode: 91 Key value: Open Bracket
+Keycode: 92 Key value: Back Slash
+Keycode: 93 Key value: Close Bracket
+Keycode: 94 Key value: Unknown keyCode: 0x5e
+Keycode: 95 Key value: Unknown keyCode: 0x5f
+Keycode: 96 Key value: NumPad-0
+Keycode: 97 Key value: NumPad-1
+Keycode: 98 Key value: NumPad-2
+Keycode: 99 Key value: NumPad-3
+Keycode: 100 Key value: NumPad-4
+Keycode: 101 Key value: NumPad-5
+Keycode: 102 Key value: NumPad-6
+Keycode: 103 Key value: NumPad-7
+Keycode: 104 Key value: NumPad-8
+Keycode: 105 Key value: NumPad-9
+Keycode: 106 Key value: NumPad *
+Keycode: 107 Key value: NumPad +
+Keycode: 108 Key value: NumPad ,
+Keycode: 109 Key value: NumPad -
+Keycode: 110 Key value: NumPad .
+Keycode: 111 Key value: NumPad /
+Keycode: 112 Key value: F1
+Keycode: 113 Key value: F2
+Keycode: 114 Key value: F3
+Keycode: 115 Key value: F4
+Keycode: 116 Key value: F5
+Keycode: 117 Key value: F6
+Keycode: 118 Key value: F7
+Keycode: 119 Key value: F8
+Keycode: 120 Key value: F9
+Keycode: 121 Key value: F10
+Keycode: 122 Key value: F11
+Keycode: 123 Key value: F12
+Keycode: 124 Key value: Unknown keyCode: 0x7c
+Keycode: 125 Key value: Unknown keyCode: 0x7d
+Keycode: 126 Key value: Unknown keyCode: 0x7e
+Keycode: 127 Key value: Delete
+Keycode: 128 Key value: Dead Grave
+Keycode: 129 Key value: Dead Acute
+Keycode: 130 Key value: Dead Circumflex
+Keycode: 131 Key value: Dead Tilde
+Keycode: 132 Key value: Dead Macron
+Keycode: 133 Key value: Dead Breve
+Keycode: 134 Key value: Dead Above Dot
+Keycode: 135 Key value: Dead Diaeresis
+Keycode: 136 Key value: Dead Above Ring
+Keycode: 137 Key value: Dead Double Acute
+Keycode: 138 Key value: Dead Caron
+Keycode: 139 Key value: Dead Cedilla
+Keycode: 140 Key value: Dead Ogonek
+Keycode: 141 Key value: Dead Iota
+Keycode: 142 Key value: Dead Voiced Sound
+Keycode: 143 Key value: Dead Semivoiced Sound
+Keycode: 144 Key value: Num Lock
+Keycode: 145 Key value: Scroll Lock
+Keycode: 146 Key value: Unknown keyCode: 0x92
+Keycode: 147 Key value: Unknown keyCode: 0x93
+Keycode: 148 Key value: Unknown keyCode: 0x94
+Keycode: 149 Key value: Unknown keyCode: 0x95
+Keycode: 150 Key value: Ampersand
+Keycode: 151 Key value: Asterisk
+Keycode: 152 Key value: Double Quote
+Keycode: 153 Key value: Less
+Keycode: 154 Key value: Print Screen
+Keycode: 155 Key value: Insert
+Keycode: 156 Key value: Help
+Keycode: 157 Key value: Meta
+Keycode: 158 Key value: Unknown keyCode: 0x9e
+Keycode: 159 Key value: Unknown keyCode: 0x9f
+Keycode: 160 Key value: Greater
+Keycode: 161 Key value: Left Brace
+Keycode: 162 Key value: Right Brace
+Keycode: 163 Key value: Unknown keyCode: 0xa3
+Keycode: 164 Key value: Unknown keyCode: 0xa4
+Keycode: 165 Key value: Unknown keyCode: 0xa5
+Keycode: 166 Key value: Unknown keyCode: 0xa6
+Keycode: 167 Key value: Unknown keyCode: 0xa7
+Keycode: 168 Key value: Unknown keyCode: 0xa8
+Keycode: 169 Key value: Unknown keyCode: 0xa9
+Keycode: 170 Key value: Unknown keyCode: 0xaa
+Keycode: 171 Key value: Unknown keyCode: 0xab
+Keycode: 172 Key value: Unknown keyCode: 0xac
+Keycode: 173 Key value: Unknown keyCode: 0xad
+Keycode: 174 Key value: Unknown keyCode: 0xae
+Keycode: 175 Key value: Unknown keyCode: 0xaf
+Keycode: 176 Key value: Unknown keyCode: 0xb0
+Keycode: 177 Key value: Unknown keyCode: 0xb1
+Keycode: 178 Key value: Unknown keyCode: 0xb2
+Keycode: 179 Key value: Unknown keyCode: 0xb3
+Keycode: 180 Key value: Unknown keyCode: 0xb4
+Keycode: 181 Key value: Unknown keyCode: 0xb5
+Keycode: 182 Key value: Unknown keyCode: 0xb6
+Keycode: 183 Key value: Unknown keyCode: 0xb7
+Keycode: 184 Key value: Unknown keyCode: 0xb8
+Keycode: 185 Key value: Unknown keyCode: 0xb9
+Keycode: 186 Key value: Unknown keyCode: 0xba
+Keycode: 187 Key value: Unknown keyCode: 0xbb
+Keycode: 188 Key value: Unknown keyCode: 0xbc
+Keycode: 189 Key value: Unknown keyCode: 0xbd
+Keycode: 190 Key value: Unknown keyCode: 0xbe
+Keycode: 191 Key value: Unknown keyCode: 0xbf
+Keycode: 192 Key value: Back Quote
+Keycode: 193 Key value: Unknown keyCode: 0xc1
+Keycode: 194 Key value: Unknown keyCode: 0xc2
+Keycode: 195 Key value: Unknown keyCode: 0xc3
+Keycode: 196 Key value: Unknown keyCode: 0xc4
+Keycode: 197 Key value: Unknown keyCode: 0xc5
+Keycode: 198 Key value: Unknown keyCode: 0xc6
+Keycode: 199 Key value: Unknown keyCode: 0xc7
+Keycode: 200 Key value: Unknown keyCode: 0xc8
