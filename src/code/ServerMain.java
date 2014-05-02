@@ -53,6 +53,7 @@ public class ServerMain implements Runnable
     	
     	System.out.println("Enter name (ex HAL1) or ip address of host to broadcast to: ");
 		address = reader.nextLine();
+		reader.close();
 		
 	}
 	

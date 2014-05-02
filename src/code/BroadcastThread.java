@@ -39,7 +39,6 @@ public class BroadcastThread extends Thread
 			        DatagramPacket packet = new DatagramPacket(buf, buf.length ,address, PORT); // FFFIIIIXXX THIS!
 // use a fixed port?
 			        socket.send(packet);
-			        System.out.println("Sent packet with a " + buf[0]);
 			        buf = com.popPacketToSend();
 	        	}
 	        	Thread.sleep(20);
