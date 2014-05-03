@@ -182,8 +182,8 @@ public class ServerMain implements Runnable
     	
     	// Drive: 0x10 - 0x1F
     	HeaderMap.put(HeaderType.driveAll, new Byte((byte) 0x10));
-    	HeaderMap.put(HeaderType.driveRight, new Byte((byte) 0x11));
-    	HeaderMap.put(HeaderType.driveLeft, new Byte((byte) 0x12));
+    	HeaderMap.put(HeaderType.driveLeft, new Byte((byte) 0x11));
+    	HeaderMap.put(HeaderType.driveRight, new Byte((byte) 0x12));
     	HeaderMap.put(HeaderType.drive1, new Byte((byte) 0x13));
     	HeaderMap.put(HeaderType.drive2, new Byte((byte) 0x14));
     	HeaderMap.put(HeaderType.drive3, new Byte((byte) 0x15));
