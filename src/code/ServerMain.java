@@ -171,6 +171,11 @@ public class ServerMain implements Runnable
     private void update()
     {
     	keyboard.update();
+    	
+    }
+    private void render()
+    {
+    	
     }
     
     private static void initializeHeaderMap()	// set up map of strings to byte values
