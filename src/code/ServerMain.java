@@ -4,6 +4,7 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -100,7 +101,7 @@ public class ServerMain implements Runnable
     { 
         long lastTime = System.nanoTime(); //uses nanoseconds, more precise than current time in milliseconds
         long timer = System.currentTimeMillis(); //timer variable for fps counter
-        final double ns = 1000000000.0 / 60.0; //use this variable to ensure 60 times a second
+        final double ns = 1000000000.0 / 20.0; //use this variable to ensure 60 times a second
         double delta = 0.0;
         int frames = 0, updates = 0; //first is how many frames per second, second should be 60 updates per second
         while (running) //loops while game going. two parts: graphical and logical
@@ -160,6 +161,7 @@ public class ServerMain implements Runnable
     public static void createPacket(HeaderType header, int data)
     {
     	ByteBuffer buffer = ByteBuffer.allocate(5);	// 5 bytes
+    	//buffer.order(ByteOrder.LITTLE_ENDIAN);	// switch to little endian
     	buffer.put(HeaderMap.getByte(header));
     	buffer.putInt(data);
     	buffer.flip();
