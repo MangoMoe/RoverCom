@@ -1,4 +1,5 @@
 // The format of this file is keycode (see keycode file), command (Valid HeaderType enum value), and value to broadcast (int)
-65	armTurretCommand	1000
-96	driveRight		3510
-46	gimbal			-65000
+37	armGripperCurrent	256
+38	armTurretCommand	1000
+39	driveRight		3510
+40	gimbal			-65000
