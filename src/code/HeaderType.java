@@ -29,7 +29,7 @@ public enum HeaderType {	// enumeration of udp packet header types for easy acce
 	// misc header types
 	misc;
 	
-	private final int MIN_VALUE;
+	/*private final int MIN_VALUE;
 	private final int MAX_VALUE;
 	private final int DATA_SIZE;	// int bytes
 	private final boolean SIGNED;
@@ -37,5 +37,5 @@ public enum HeaderType {	// enumeration of udp packet header types for easy acce
 	HeaderType(int min, int max, int dataSize)
 	{
 		
-	}
+	}*/
 }
