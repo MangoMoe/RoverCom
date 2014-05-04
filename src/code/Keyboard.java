@@ -30,13 +30,15 @@ public class Keyboard implements KeyListener
 		try {
 			reader = new Scanner(file);
 			reader.nextLine();	// skip first line of file to be used as comment
+			String str;
 			
 			//HeaderType test = HeaderType.valueOf(reader.next());
 			while(reader.hasNextLine())	// loops through keymapping file inputting values into two arrays using keycode that can be indexed later
 			{
 // add case for having an X or something which means that there is no values for this keycode or something
 				keycode = reader.nextInt();
-				header = HeaderType.valueOf(reader.next());
+				str = reader.next();
+				header = HeaderType.valueOf(str);
 				value = reader.nextInt();
 				
 				headers[keycode] = header;
