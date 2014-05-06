@@ -27,22 +27,31 @@ public class Keyboard implements KeyListener
     	Scanner reader;
     	int keycode, value;
     	HeaderType header;
+    	String str;
 		try {
 			reader = new Scanner(file);
-			reader.nextLine();	// skip first line of file to be used as comment
-			String str;
 			
 			//HeaderType test = HeaderType.valueOf(reader.next());
 			while(reader.hasNextLine())	// loops through keymapping file inputting values into two arrays using keycode that can be indexed later
 			{
 // add case for having an X or something which means that there is no values for this keycode or something
-				keycode = reader.nextInt();
-				str = reader.next();
-				header = HeaderType.valueOf(str);
-				value = reader.nextInt();
-				
-				headers[keycode] = header;
-				values[keycode] = value;
+				if(reader.hasNextInt())	// if there is an int nearby (not a comment)
+				{
+					keycode = reader.nextInt();
+					if(reader.hasNext())	// keep checking for expected input
+					{
+						str = reader.next();
+						header = HeaderType.valueOf(str);
+						if(reader.hasNextInt())
+						{
+							value = reader.nextInt();
+							
+							headers[keycode] = header;
+							values[keycode] = value;
+						}
+					}
+				}
+				else{reader.nextLine();}	// go to next line if no ints, i.e. this is a comment
 			}
 			reader.close();
 		} catch (Exception e) {
