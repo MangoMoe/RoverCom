@@ -4,7 +4,6 @@
 39	driveRight		1750
 40	driveAll		1250
 81	driveLeft		1750
-// a comment!
 87	driveAll		1750
 69	driveRight		1750
 65	driveLeft		1250

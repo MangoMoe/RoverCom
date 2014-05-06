@@ -8,8 +8,6 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
-import utils.TwoWayMap;
-
 //Highest possible value for byte:	0x7F --> 127
 //Lowest possible value for byte:	-0x80 --> -128
 //To use higher values, cast to byte -->  array[0] = (byte) 0xFF
@@ -25,7 +23,6 @@ public class ServerMain implements Runnable
 	// Logic
 	private static CommonData com;	// must be static for some reason
 	private Rover hal;
-	private static TwoWayMap<HeaderType, Byte> HeaderMap = new TwoWayMap<HeaderType, Byte>();	// map byte values to strings for easy encoding and decoding
 	
 	// Structure/required to run
 	private Keyboard keyboard;
@@ -38,7 +35,6 @@ public class ServerMain implements Runnable
 	{
 		// setup
     	hal = new Rover();
-    	initializeHeaderMap();	// initialize map of header byte values
     	com = new CommonData();	// initialize common data
     	keyboard = new Keyboard();
     	canvas = new Canvas();
@@ -151,7 +147,7 @@ public class ServerMain implements Runnable
     public static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
     {
     	ByteBuffer buffer = ByteBuffer.allocate(3);	// three bytes
-    	buffer.put(HeaderMap.getByte(header));
+    	buffer.put(header.getByte());
     	buffer.putShort(data);
     	buffer.flip();
     	
@@ -160,7 +156,7 @@ public class ServerMain implements Runnable
     public static void createPacket(HeaderType header, int data)
     {
     	ByteBuffer buffer = ByteBuffer.allocate(5);	// 5 bytes
-    	buffer.put(HeaderMap.getByte(header));
+    	buffer.put(header.getByte());
     	buffer.putInt(data);
     	buffer.flip();
     	
@@ -175,58 +171,6 @@ public class ServerMain implements Runnable
     }
     private void render()
     {
-    	
-    }
-    
-    private static void initializeHeaderMap()	// set up map of strings to byte values
-    {
-    	
-    	//enum?
-    	// System: 0x00 - 0x0F
-    	HeaderMap.put(HeaderType.systemConfirmation, new Byte((byte) 0x00));
-    	
-    	// Drive: 0x10 - 0x1F
-    	HeaderMap.put(HeaderType.driveAll, new Byte((byte) 0x10));
-    	HeaderMap.put(HeaderType.driveLeft, new Byte((byte) 0x11));
-    	HeaderMap.put(HeaderType.driveRight, new Byte((byte) 0x12));
-    	HeaderMap.put(HeaderType.drive1, new Byte((byte) 0x13));
-    	HeaderMap.put(HeaderType.drive2, new Byte((byte) 0x14));
-    	HeaderMap.put(HeaderType.drive3, new Byte((byte) 0x15));
-    	HeaderMap.put(HeaderType.drive4, new Byte((byte) 0x16));
-    	HeaderMap.put(HeaderType.drive5, new Byte((byte) 0x17));
-    	HeaderMap.put(HeaderType.drive6, new Byte((byte) 0x18));
-    	
-    	// Arm: 0x20 - 0x2F
-    	HeaderMap.put(HeaderType.armTurretCommand, new Byte((byte) 0x20));
-    	HeaderMap.put(HeaderType.armShoulderCommand, new Byte((byte) 0x21));
-    	HeaderMap.put(HeaderType.armElbowCommand, new Byte((byte) 0x22));
-    	HeaderMap.put(HeaderType.armWristFlapCommand, new Byte((byte) 0x23));
-    	HeaderMap.put(HeaderType.armWristRotateCommand, new Byte((byte) 0x24));
-    	HeaderMap.put(HeaderType.armGripperCommand, new Byte((byte) 0x25));
-    	HeaderMap.put(HeaderType.armRotatorCommand, new Byte((byte) 0x26));
-    	HeaderMap.put(HeaderType.armShoulderFeedback, new Byte((byte) 0x27));
-    	HeaderMap.put(HeaderType.armShoulderCurrent, new Byte((byte) 0x28));
-    	HeaderMap.put(HeaderType.armElbowFeedback , new Byte((byte) 0x29));
-    	HeaderMap.put(HeaderType.armElbowCurrent, new Byte((byte) 0x2A));
-    	HeaderMap.put(HeaderType.armWristFlapFeedback, new Byte((byte) 0x2B));
-    	HeaderMap.put(HeaderType.armWristRotateFeedback, new Byte((byte) 0x2C));
-    	HeaderMap.put(HeaderType.armGripperCurrent, new Byte((byte) 0x2B));
-    	
-    	// Gimbal: 0x30-0x3F
-    	HeaderMap.put(HeaderType.gimbal, new Byte((byte) 0x30));
-    	
-    	// Camera: 0x40 - 0x4F
-    	HeaderMap.put(HeaderType.camera, new Byte((byte) 0x40));
-    	
-    	// Battery: 0x50 - 0x5F
-    	HeaderMap.put(HeaderType.battery, new Byte((byte) 0x50));
-    	
-    	// IMU: 0x60 - 0x6F
-    	HeaderMap.put(HeaderType.imu, new Byte((byte) 0x60));
-    	
-    	// Misc/laser?: 0x70 - 0x7F
-    	HeaderMap.put(HeaderType.misc, new Byte((byte) 0x70));
-    	
     	
     }
     
