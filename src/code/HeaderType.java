@@ -29,13 +29,19 @@ public enum HeaderType {	// enumeration of udp packet header types for easy acce
 	// misc header types
 	misc;
 	
-	/*private final int MIN_VALUE;
+	private final int MIN_VALUE;
 	private final int MAX_VALUE;
-	private final int DATA_SIZE;	// int bytes
+	private final int DATA_SIZE;	// in bytes
+	private final byte HEADER_BYTE;
 	private final boolean SIGNED;
+	private HeaderType[] headerFromByte;
 	
-	HeaderType(int min, int max, int dataSize)
+	HeaderType(int min, int max, int dataSize, byte headerByte)
 	{
-		
-	}*/
+		MIN_VALUE = min;
+		MAX_VALUE = max;
+		DATA_SIZE = dataSize;
+		HEADER_BYTE = headerByte;
+		headerFromByte[headerByte] = this;
+	}
 }
