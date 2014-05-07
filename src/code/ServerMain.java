@@ -143,17 +143,16 @@ public class ServerMain implements Runnable
     	Interface.start();
     }
     
-    //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?
-    public static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
+    public static void requestPacket(HeaderType header, int data)	//place to put packet validation logic
     {
-    	ByteBuffer buffer = ByteBuffer.allocate(3);	// three bytes
-    	buffer.put(header.getByte());
-    	buffer.putShort(data);
-    	buffer.flip();
+    	header.setCurrentValue(data);	// set new value
+    	data = header.getCurrentValue();
     	
-    	com.addPacketToSend(buffer.array());
+    	createPacket(header, data);
     }
-    public static void createPacket(HeaderType header, int data)
+    
+    
+    private static void createPacket(HeaderType header, int data)
     {
     	ByteBuffer buffer = ByteBuffer.allocate(5);	// 5 bytes
     	buffer.put(header.getByte());
@@ -162,6 +161,17 @@ public class ServerMain implements Runnable
     	
     	com.addPacketToSend(buffer.array());
     }
+    
+    //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?
+    /*public static void createPacket(HeaderType header, short data)	// create packet creation functions // USE BIG ENDIAN FOR NOW (default)
+    {
+    	ByteBuffer buffer = ByteBuffer.allocate(3);	// three bytes
+    	buffer.put(header.getByte());
+    	buffer.putShort(data);
+    	buffer.flip();
+    	
+    	com.addPacketToSend(buffer.array());
+    }*/
     
     // input stuffs
     private void update()

@@ -72,7 +72,7 @@ public class Keyboard implements KeyListener
         	{
         		if(headers[i] != null)	// only create packets for defined header values
         		{
-        			ServerMain.createPacket(headers[i], values[i]);
+        			ServerMain.requestPacket(headers[i], values[i]);
         			//System.out.println("Creating packet for " + KeyEvent.getKeyText(i));
         		}
         	}

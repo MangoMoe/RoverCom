@@ -33,17 +33,17 @@ public class Rover	// static???
 	{
 		switch(variable)
 		{
-		case "wheel0":
-			return wheels[0];
 		case "wheel1":
-			return wheels[1];
+			return wheels[0];
 		case "wheel2":
-			return wheels[2];
+			return wheels[1];
 		case "wheel3":
-			return wheels[3];
+			return wheels[2];
 		case "wheel4":
-			return wheels[4];
+			return wheels[3];
 		case "wheel5":
+			return wheels[4];
+		case "wheel6":
 			return wheels[5];
 		case "turret_pos":
 			return turret_pos;
@@ -85,22 +85,22 @@ public class Rover	// static???
 	{
 		switch(variable)
 		{
-		case "wheel0":
+		case "wheel1":
 			wheels[0] = data;
 			break;
-		case "wheel1":
+		case "wheel2":
 			wheels[1] = data;
 			break;
-		case "wheel2":
+		case "wheel3":
 			wheels[2] = data;
 			break;
-		case "wheel3":
+		case "wheel4":
 			wheels[3] = data;
 			break;
-		case "wheel4":
+		case "wheel5":
 			wheels[4] = data;
 			break;
-		case "wheel5":
+		case "wheel6":
 			wheels[5] = data;
 			break;
 		case "turret_pos":
