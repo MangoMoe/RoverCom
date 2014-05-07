@@ -96,7 +96,7 @@ public class ServerMain implements Runnable
     { 
         long lastTime = System.nanoTime(); //uses nanoseconds, more precise than current time in milliseconds
         long timer = System.currentTimeMillis(); //timer variable for fps counter
-        final double ns = 1000000000.0 / 60.0; //use this variable to ensure 60 times a second
+        final double ns = 1000000000.0 / 10.0; //use this variable to ensure 60 times a second
         double delta = 0.0;
         int frames = 0, updates = 0; //first is how many frames per second, second should be 60 updates per second
         while (running) //loops while game going. two parts: graphical and logical
