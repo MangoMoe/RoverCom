@@ -41,14 +41,14 @@ public class BroadcastThread extends Thread
 			        socket.send(packet);
 			        buf = com.popPacketToSend();
 	        	}
-	        	Thread.sleep(20);
+	        	//Thread.sleep(20);
 	        }
         } 
         catch (IOException e) 
         {
         	System.err.println("Some sort of IO exception in BroadcastThread, Uh oh.");
             e.printStackTrace();
-        } catch (InterruptedException e) {	// we got interrupted while sleeping DO WE NEED BOTH THIS AND THE CONDITION IN THE WHILE LOOP ABOVE?
+        } catch (Exception e) {	// we got interrupted while sleeping DO WE NEED BOTH THIS AND THE CONDITION IN THE WHILE LOOP ABOVE?
 			// do nothing, just keep going
 		}
         

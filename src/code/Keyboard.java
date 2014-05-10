@@ -26,8 +26,9 @@ public class Keyboard implements KeyListener
     //^^^^^^^^	maybe add this later, just keep as ints for now
     
     // XboxController things
-    
-    
+    static double leftMagnitude = 0, rightMagnitude = 0;
+    static double leftDirection = 0, rightDirection = 0;
+    static boolean brake = false, paused = false;
     
     
     public boolean up, down, left, right;
@@ -92,7 +93,23 @@ public class Keyboard implements KeyListener
         		}
         	}
         }
-        
+        if(!paused)
+        {
+	        if((leftDirection > 270.0 || leftDirection < 90.0) && !brake)	// Left Thumb forward
+	        	ServerMain.requestPacket(HeaderType.driveLeft, (int)(1500 + (250 * leftMagnitude)));
+	        else if (!brake)	// Left Thumb backward
+	        	ServerMain.requestPacket(HeaderType.driveLeft, (int)(1500 - (250 * leftMagnitude)));
+	        else
+	        	ServerMain.requestPacket(HeaderType.driveAll, 1500); // stop!!!!
+	        if((rightDirection > 270.0 || rightDirection < 90.0) && !brake)	// Right Thumb Forward
+	        	ServerMain.requestPacket(HeaderType.driveRight, (int)(1500 + (250 * rightMagnitude)));
+	        else if (!brake)	// Right Thumb Backward
+	        	ServerMain.requestPacket(HeaderType.driveRight, (int)(1500 - (250 * rightMagnitude)));
+	        else
+	        	ServerMain.requestPacket(HeaderType.driveAll, 1500);
+        }
+        else
+        	ServerMain.requestPacket(HeaderType.driveAll, 1500);
     }
     
     public void keyPressed(KeyEvent e)
@@ -116,6 +133,60 @@ public class Keyboard implements KeyListener
     {	//http://www.aplu.ch/classdoc/xbox/ch/aplu/xboxcontroller/XboxControllerAdapter.html
     	return new XboxControllerAdapter()
     	{
+    		public void leftThumbMagnitude(double magnitude)
+    		{
+    			leftMagnitude = magnitude;
+    		}
+    		public void leftThumbDirection(double direction)
+    		{
+    			leftDirection = direction;
+    		}
+    		public void rightThumbMagnitude(double magnitude)
+    		{
+    			rightMagnitude = magnitude;
+    		}
+    		public void rightThumbDirection(double direction)
+    		{
+    			rightDirection = direction;
+    		}
+    		
+    		public void leftShoulder(boolean pressed)
+    		{
+    			brake = pressed;
+    		}
+    		
+    		public void rightShoulder(boolean pressed)
+    		{
+    			brake = pressed;
+    		}
+    		
+    		public void leftTrigger(double value)
+    		{
+    			if(value > 0.1)
+    				brake = true;
+    			else
+    				brake = false;
+    		}
+    		
+    		public void rightTrigger(double value)
+    		{
+    			if(value > 0.1)
+    				brake = true;
+    			else
+    				brake = false;
+    		}
+    		
+    		public void start(boolean pressed)
+    		{
+    			if(pressed)	// pressing start tells rover to hold position
+    			{
+    				if(paused == true)
+    					paused = false;
+    				else
+    					paused = true;
+    			}
+    		}
+    		
     		public void buttonA(boolean pressed)
     		{
     			ServerMain.requestPacket(HeaderType.armWristFlapCommand, 100);
