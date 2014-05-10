@@ -16,10 +16,7 @@ import ch.aplu.xboxcontroller.XboxControllerAdapter;
 
 public class Keyboard implements KeyListener
 {
-	private XboxController controller;
-	  private int leftVibrate = 0; 
-	  private int rightVibrate = 0;
-	
+	// Keyboard things
     private static final int NUMKEYS = 1000;
     private boolean[] keys = new boolean[NUMKEYS];//stores states of keys on keyboard *keyCodes (see below) might go out of this range*
     // initialize array?
@@ -28,45 +25,17 @@ public class Keyboard implements KeyListener
     //private boolean[] isShort = new boolean[NUMKEYS];
     //^^^^^^^^	maybe add this later, just keep as ints for now
     
+    // XboxController things
+    
+    
+    
+    
     public boolean up, down, left, right;
     public Keyboard()
     {
     	updateKeyMappings();
-    	controller = new XboxController();
-    	if (!controller.isConnected())
-        {
-          JOptionPane.showMessageDialog(null, 
-            "Xbox controller not connected.",
-            "Fatal error", 
-            JOptionPane.ERROR_MESSAGE);
-          controller.release();
-          return;
-        }
-        
-        controller.addXboxControllerListener(new XboxControllerAdapter()
-        {
-          public void leftTrigger(double value)
-          {
-            leftVibrate = (int)(65535 * value * value);
-            controller.vibrate(leftVibrate, rightVibrate);
-          }
-          public void rightTrigger(double value)
-          {
-            rightVibrate = (int)(65535 * value * value);
-            controller.vibrate(leftVibrate, rightVibrate);
-          }
-        });
-        
-        JOptionPane.showMessageDialog(null, 
-          "Xbox controller connected.\n" + 
-          "Press left or right trigger, Ok to quit.",
-            "RumbleDemo V1.0 (www.aplu.ch)", 
-            JOptionPane.PLAIN_MESSAGE);
-        
-        controller.release();
-        System.exit(0);
-      }
-    //}
+    	
+    }
     private void updateKeyMappings()
     {
     	File file = new File("keyMappings.txt");
@@ -141,5 +110,23 @@ public class Keyboard implements KeyListener
     public void keyTyped(KeyEvent e)
     {
         
+    }
+    
+    public static XboxControllerAdapter initializeAdapter(final XboxController xc)
+    {	//http://www.aplu.ch/classdoc/xbox/ch/aplu/xboxcontroller/XboxControllerAdapter.html
+    	return new XboxControllerAdapter()
+    	{
+    		public void buttonA(boolean pressed)
+    		{
+    			ServerMain.requestPacket(HeaderType.armWristFlapCommand, 100);
+    			xc.vibrate(0, 65000);
+    		}
+    		
+    		public void buttonB(boolean pressed)
+    		{
+    			ServerMain.requestPacket(HeaderType.armWristFlapCommand, -100);
+    			xc.vibrate(0, 0);
+    		}
+    	};
     }
 }

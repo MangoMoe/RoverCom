@@ -7,6 +7,9 @@ import java.nio.ByteBuffer;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import ch.aplu.xboxcontroller.XboxController;
 
 
 //Highest possible value for byte:	0x7F --> 127
@@ -24,6 +27,7 @@ public class ServerMain implements Runnable
 	// Logic
 	private static CommonData com;	// must be static for some reason
 	private Rover hal;
+	private XboxController xc;
 	
 	// Structure/required to run
 	private Keyboard keyboard;
@@ -45,6 +49,18 @@ public class ServerMain implements Runnable
     	Dimension size = new Dimension(600, 300);
     	//^^^^^^ replace with pre-defined values
     	canvas.setPreferredSize(size);
+    	
+    	xc = new XboxController();
+    	if (!xc.isConnected())	// if xbox controller not connected tell error
+        {
+          JOptionPane.showMessageDialog(null, 
+            "Xbox controller not connected.",
+            "Fatal error", 
+            JOptionPane.ERROR_MESSAGE);
+          xc.release();
+        }
+    	xc.addXboxControllerListener(Keyboard.initializeAdapter(xc));	// initialize input
+    	
     	
     	Scanner reader = new Scanner(System.in);	// initialize some stuff
     	
@@ -78,6 +94,8 @@ public class ServerMain implements Runnable
 	public synchronized void stop()
 	{
 		running = false;
+		
+		xc.release();	// release xbox controller (part of cleanup)
 		
 		input.interrupt();	// interrupt the inputThread to shut it down
     	output.interrupt();
