@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
+
 //Highest possible value for byte:	0x7F --> 127
 //Lowest possible value for byte:	-0x80 --> -128
 //To use higher values, cast to byte -->  array[0] = (byte) 0xFF

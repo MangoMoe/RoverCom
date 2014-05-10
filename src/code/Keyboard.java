@@ -6,8 +6,20 @@ import java.io.File;
 import java.util.Scanner;
 
 
+
+
+
+import javax.swing.JOptionPane;
+
+import ch.aplu.xboxcontroller.XboxController;
+import ch.aplu.xboxcontroller.XboxControllerAdapter;
+
 public class Keyboard implements KeyListener
 {
+	private XboxController controller;
+	  private int leftVibrate = 0; 
+	  private int rightVibrate = 0;
+	
     private static final int NUMKEYS = 1000;
     private boolean[] keys = new boolean[NUMKEYS];//stores states of keys on keyboard *keyCodes (see below) might go out of this range*
     // initialize array?
@@ -20,7 +32,41 @@ public class Keyboard implements KeyListener
     public Keyboard()
     {
     	updateKeyMappings();
-    }
+    	controller = new XboxController();
+    	if (!controller.isConnected())
+        {
+          JOptionPane.showMessageDialog(null, 
+            "Xbox controller not connected.",
+            "Fatal error", 
+            JOptionPane.ERROR_MESSAGE);
+          controller.release();
+          return;
+        }
+        
+        controller.addXboxControllerListener(new XboxControllerAdapter()
+        {
+          public void leftTrigger(double value)
+          {
+            leftVibrate = (int)(65535 * value * value);
+            controller.vibrate(leftVibrate, rightVibrate);
+          }
+          public void rightTrigger(double value)
+          {
+            rightVibrate = (int)(65535 * value * value);
+            controller.vibrate(leftVibrate, rightVibrate);
+          }
+        });
+        
+        JOptionPane.showMessageDialog(null, 
+          "Xbox controller connected.\n" + 
+          "Press left or right trigger, Ok to quit.",
+            "RumbleDemo V1.0 (www.aplu.ch)", 
+            JOptionPane.PLAIN_MESSAGE);
+        
+        controller.release();
+        System.exit(0);
+      }
+    //}
     private void updateKeyMappings()
     {
     	File file = new File("keyMappings.txt");
