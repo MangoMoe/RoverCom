@@ -36,6 +36,8 @@ public class ServerMain implements Runnable
 	private Thread thread;
 	private boolean running = false;
 	
+	public static boolean ControllerConnected = false;	// make not static?
+	
 	public ServerMain()
 	{
 		// setup
@@ -54,12 +56,21 @@ public class ServerMain implements Runnable
     	if (!xc.isConnected())	// if xbox controller not connected tell error
         {
           JOptionPane.showMessageDialog(null, 
-            "Xbox controller not connected.",
-            "Fatal error", 
-            JOptionPane.ERROR_MESSAGE);
+            "Xbox controller not connected. Press escape to activate keyboard input or connect controller and restart program.",
+            "Startup Information", 
+            JOptionPane.WARNING_MESSAGE);
           xc.release();
+          ControllerConnected = false;
         }
-    	xc.addXboxControllerListener(Keyboard.initializeAdapter(xc));	// initialize input
+    	else
+    	{
+    		JOptionPane.showMessageDialog(null,
+    				"Xbox controller successfully connected. Press the escape key at any time to switch to keyboard input or press F1 to switch back to controller.", 
+    				"Startup Information",
+    				JOptionPane.WARNING_MESSAGE);
+    		ControllerConnected = true;
+    		xc.addXboxControllerListener(Keyboard.initializeAdapter(xc));	// initialize input
+    	}
     	
     	
     	Scanner reader = new Scanner(System.in);	// initialize some stuff

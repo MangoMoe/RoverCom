@@ -41,7 +41,7 @@ public class BroadcastThread extends Thread
 			        socket.send(packet);
 			        buf = com.popPacketToSend();
 	        	}
-	        	//Thread.sleep(20);
+	        	Thread.sleep(20);
 	        }
         } 
         catch (IOException e) 

@@ -5,12 +5,6 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.Scanner;
 
-
-
-
-
-import javax.swing.JOptionPane;
-
 import ch.aplu.xboxcontroller.XboxController;
 import ch.aplu.xboxcontroller.XboxControllerAdapter;
 
@@ -24,13 +18,14 @@ public class Keyboard implements KeyListener
     private int[] values = new int[NUMKEYS];
     //private boolean[] isShort = new boolean[NUMKEYS];
     //^^^^^^^^	maybe add this later, just keep as ints for now
+    private boolean anyKeyPressed;
     
     // XboxController things
     static double leftMagnitude = 0, rightMagnitude = 0;
     static double leftDirection = 0, rightDirection = 0;
     static boolean brake = false, paused = false;
     
-    
+    private boolean disableController = false;
     public boolean up, down, left, right;
     public Keyboard()
     {
@@ -77,39 +72,60 @@ public class Keyboard implements KeyListener
     }
     public void update() //checks every cycle if key is pressed or released
     {
-        up = keys[KeyEvent.VK_UP] || keys[KeyEvent.VK_W];
-        down = keys[KeyEvent.VK_DOWN] || keys[KeyEvent.VK_S];
-        left = keys[KeyEvent.VK_LEFT] || keys[KeyEvent.VK_A];
-        right = keys[KeyEvent.VK_RIGHT] || keys[KeyEvent.VK_D];
-        
-        for(int i = 0; i < NUMKEYS; i++)
+    	if(keys[27])
+    	{
+			disableController = true;
+    	}
+    	else if(keys[112])
+    	{
+			disableController = false;
+    	}
+    	if(disableController)	// only do key stuff if not using controller
+    	{
+	        up = keys[KeyEvent.VK_UP] || keys[KeyEvent.VK_W];
+	        down = keys[KeyEvent.VK_DOWN] || keys[KeyEvent.VK_S];
+	        left = keys[KeyEvent.VK_LEFT] || keys[KeyEvent.VK_A];
+	        right = keys[KeyEvent.VK_RIGHT] || keys[KeyEvent.VK_D];
+	        
+	        for(int i = 0; i < NUMKEYS; i++)
+	        {
+	        	if(keys[i])
+	        	{
+	        		if(headers[i] != null)	// only create packets for defined header values
+	        		{
+	        			ServerMain.requestPacket(headers[i], values[i]);
+	        			//System.out.println("Packet: " + headers[i] + " value: " + values[i]);
+	        			//System.out.println("Creating packet for " + KeyEvent.getKeyText(i));
+	        		}
+	        		anyKeyPressed = true;
+	        	}
+	        }
+	        if(!anyKeyPressed)
+	        {
+	        	ServerMain.requestPacket(HeaderType.driveAll, 1500);	// send stop packet if no keys pressed
+	        }
+    	}
+        if(!disableController && ServerMain.ControllerConnected)
         {
-        	if(keys[i])
-        	{
-        		if(headers[i] != null)	// only create packets for defined header values
-        		{
-        			ServerMain.requestPacket(headers[i], values[i]);
-        			//System.out.println("Creating packet for " + KeyEvent.getKeyText(i));
-        		}
-        	}
-        }
-        if(!paused)
-        {
-	        if((leftDirection > 270.0 || leftDirection < 90.0) && !brake)	// Left Thumb forward
-	        	ServerMain.requestPacket(HeaderType.driveLeft, (int)(1500 + (250 * leftMagnitude)));
-	        else if (!brake)	// Left Thumb backward
-	        	ServerMain.requestPacket(HeaderType.driveLeft, (int)(1500 - (250 * leftMagnitude)));
-	        else
-	        	ServerMain.requestPacket(HeaderType.driveAll, 1500); // stop!!!!
-	        if((rightDirection > 270.0 || rightDirection < 90.0) && !brake)	// Right Thumb Forward
-	        	ServerMain.requestPacket(HeaderType.driveRight, (int)(1500 + (250 * rightMagnitude)));
-	        else if (!brake)	// Right Thumb Backward
-	        	ServerMain.requestPacket(HeaderType.driveRight, (int)(1500 - (250 * rightMagnitude)));
+	        if(!paused)
+	        {
+		        if((leftDirection > 270.0 || leftDirection < 90.0) && !brake)	// Left Thumb forward
+		        	ServerMain.requestPacket(HeaderType.driveLeft, (int)(1500 + (250 * leftMagnitude)));
+		        else if (!brake)	// Left Thumb backward
+		        	ServerMain.requestPacket(HeaderType.driveLeft, (int)(1500 - (250 * leftMagnitude)));
+		        else
+		        	ServerMain.requestPacket(HeaderType.driveAll, 1500); // stop!!!!
+		        if((rightDirection > 270.0 || rightDirection < 90.0) && !brake)	// Right Thumb Forward
+		        	ServerMain.requestPacket(HeaderType.driveRight, (int)(1500 + (250 * rightMagnitude)));
+		        else if (!brake)	// Right Thumb Backward
+		        	ServerMain.requestPacket(HeaderType.driveRight, (int)(1500 - (250 * rightMagnitude)));
+		        else
+		        	ServerMain.requestPacket(HeaderType.driveAll, 1500);
+	        }
 	        else
 	        	ServerMain.requestPacket(HeaderType.driveAll, 1500);
         }
-        else
-        	ServerMain.requestPacket(HeaderType.driveAll, 1500);
+        anyKeyPressed = false;
     }
     
     public void keyPressed(KeyEvent e)
