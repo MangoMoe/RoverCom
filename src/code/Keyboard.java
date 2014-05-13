@@ -12,10 +12,11 @@ public class Keyboard implements KeyListener
 {
 	// Keyboard things
     private static final int NUMKEYS = 1000;
+    private static final int NUMHEADERS = 5;	// maximum number of headers per key
     private boolean[] keys = new boolean[NUMKEYS];//stores states of keys on keyboard *keyCodes (see below) might go out of this range*
     // initialize array?
-    private HeaderType[] headers = new HeaderType[NUMKEYS];
-    private int[] values = new int[NUMKEYS];
+    private HeaderType[][] headers = new HeaderType[NUMKEYS][NUMHEADERS];
+    private int[][] values = new int[NUMKEYS][NUMHEADERS];
     //private boolean[] isShort = new boolean[NUMKEYS];
     //^^^^^^^^	maybe add this later, just keep as ints for now
     private boolean anyKeyPressed;
@@ -48,17 +49,25 @@ public class Keyboard implements KeyListener
 // add case for having an X or something which means that there is no values for this keycode or something
 				if(reader.hasNextInt())	// if there is an int nearby (not a comment)
 				{
-					keycode = reader.nextInt();
-					if(reader.hasNext())	// keep checking for expected input
+					keycode = reader.nextInt();	// get keycode
+					for(int i = 0; i < NUMHEADERS; i++)
 					{
-						str = reader.next();
-						header = HeaderType.valueOf(str);
-						if(reader.hasNextInt())
+						if(reader.hasNext() && !reader.hasNextInt())	// keep checking for expected input
 						{
-							value = reader.nextInt();
-							
-							headers[keycode] = header;
-							values[keycode] = value;
+							try {
+								str = reader.next();
+								header = HeaderType.valueOf(str);
+								if(reader.hasNextInt())
+								{
+									value = reader.nextInt();
+									
+									headers[keycode][i] = header;
+									values[keycode][i] = value;
+								}
+							} catch (IllegalArgumentException e) {	// string input was not the name of a header
+								reader.nextLine();	// go to next key binding
+								break;	// break out of for loop
+							}
 						}
 					}
 				}
@@ -91,13 +100,16 @@ public class Keyboard implements KeyListener
 	        {
 	        	if(keys[i])
 	        	{
-	        		if(headers[i] != null)	// only create packets for defined header values
+	        		for(int j = 0; j < NUMHEADERS; j++)
 	        		{
-	        			ServerMain.requestPacket(headers[i], values[i]);
-	        			//System.out.println("Packet: " + headers[i] + " value: " + values[i]);
-	        			//System.out.println("Creating packet for " + KeyEvent.getKeyText(i));
+		        		if(headers[i][j] != null)	// only create packets for defined header values
+		        		{
+		        			ServerMain.requestPacket(headers[i][j], values[i][j]);
+		        			//System.out.println("Packet: " + headers[i] + " value: " + values[i]);
+		        			//System.out.println("Creating packet for " + KeyEvent.getKeyText(i));
+		        		}
+		        		anyKeyPressed = true;
 	        		}
-	        		anyKeyPressed = true;
 	        	}
 	        }
 	        if(!anyKeyPressed)

@@ -1,8 +1,8 @@
 // The format of this file is keycode (see keycode file), command (Valid HeaderType enum value), and value to broadcast (int)
 // Arrow Keys
-37	driveLeft		1750
-38	driveAll		1750
-39	driveRight		1750
+37	driveLeft		1750	armShoulderCommand	2000
+38	driveAll		1750	
+39	driveRight		1750	armShoulderCommand	-2000
 40	driveAll		1250
 // qweasd
 81	driveLeft		1750
