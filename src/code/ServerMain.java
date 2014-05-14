@@ -52,11 +52,17 @@ public class ServerMain implements Runnable
     	//^^^^^^ replace with pre-defined values
     	canvas.setPreferredSize(size);
     	
+    	Scanner reader = new Scanner(System.in);	// initialize some stuff
+    	
+    	System.out.println("Enter name (ex HAL1) or ip address of host to broadcast to: ");
+		address = reader.nextLine();
+		reader.close();
+    	
     	xc = new XboxController();
     	if (!xc.isConnected())	// if xbox controller not connected tell error
         {
           JOptionPane.showMessageDialog(null, 
-            "Xbox controller not connected. Press escape to activate keyboard input or connect controller and restart program.",
+            "Xbox controller not connected. Press escape to activate keyboard input or connect controller and restart program. Press F2 at any time to update input mappings.",
             "Startup Information", 
             JOptionPane.WARNING_MESSAGE);
           xc.release();
@@ -65,19 +71,12 @@ public class ServerMain implements Runnable
     	else
     	{
     		JOptionPane.showMessageDialog(null,
-    				"Xbox controller successfully connected. Press the escape key at any time to switch to keyboard input or press F1 to switch back to controller.", 
+    				"Xbox controller successfully connected. Press the escape key at any time to switch to keyboard input or press F1 to switch back to controller. Press F2 at any time to update input mappings.", 
     				"Startup Information",
     				JOptionPane.WARNING_MESSAGE);
     		ControllerConnected = true;
     		xc.addXboxControllerListener(Keyboard.initializeAdapter(xc));	// initialize input
     	}
-    	
-    	
-    	Scanner reader = new Scanner(System.in);	// initialize some stuff
-    	
-    	System.out.println("Enter name (ex HAL1) or ip address of host to broadcast to: ");
-		address = reader.nextLine();
-		reader.close();
 		
 	}
 	

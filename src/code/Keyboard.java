@@ -35,6 +35,14 @@ public class Keyboard implements KeyListener
     }
     private void updateKeyMappings()
     {
+    	for(int i = 0; i < NUMKEYS; i++)	// reset all mappings values
+    	{
+	    	for(int j = 0; j < NUMHEADERS; j++)
+	    	{
+	    		headers[i][j] = null;
+	    		values[i][j] = 0;
+	    	}
+    	}
     	File file = new File("keyMappings.txt");
     	Scanner reader;
     	int keycode, value;
@@ -89,6 +97,12 @@ public class Keyboard implements KeyListener
     	{
 			disableController = false;
     	}
+    	else if(keys[113])
+    	{
+			updateKeyMappings();
+			System.out.println("updating key mappings");
+    	}
+    	
     	if(disableController)	// only do key stuff if not using controller
     	{
 	        up = keys[KeyEvent.VK_UP] || keys[KeyEvent.VK_W];
