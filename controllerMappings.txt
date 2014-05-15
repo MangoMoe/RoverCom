@@ -1,0 +1,19 @@
+// Maintain this order! Lines end with a semicolon by itself
+dpad0:		armTurretCommand	1	drive6	1 ;
+dpad1:		armTurretCommand	2	drive6	1 ;
+dpad2:		armTurretCommand	3	drive6	1 ;
+dpad3:		armTurretCommand	4	drive6	1 ;
+dpad4:		armTurretCommand	5	drive6	1 ;
+dpad5:		armTurretCommand	6	drive6	1 ;
+dpad6:		armTurretCommand	7	drive6	1 ;
+dpad7:		armTurretCommand	8	drive6	1 ;
+buttonA:	armTurretCommand	9	drive6	1 ;
+buttonB:	armTurretCommand	10	drive6	1 ;
+buttonX:	armTurretCommand	11	drive6	1 ;
+buttonY:	armTurretCommand	12	drive6	1 ;
+leftShoulder:	armTurretCommand	13	drive6	1 ;
+rightShoulder:	armTurretCommand	14	drive6	1 ;
+leftTrigger:	armTurretCommand	15	drive6	1 ;
+rightTrigger:	armTurretCommand	16	drive6	1 ;
+leftThumb:	armTurretCommand	17	drive6	1 ;
+rightThumb:	armTurretCommand	18	drive6	1 ;

@@ -25,24 +25,51 @@ public class Keyboard implements KeyListener
     static double leftMagnitude = 0, rightMagnitude = 0;
     static double leftDirection = 0, rightDirection = 0;
     static boolean brake = false, paused = false;
-    
     private boolean disableController = false;
+    
+    final int NUMCONTROLLER = 18;
+    
+    static final int dpadNIndex = 0;
+    static final int dpadNEIndex = 1;
+    static final int dpadEIndex = 2;
+    static final int dpadSEIndex = 3;
+    static final int dpadSIndex = 4;
+    static final int dpadSWIndex = 5;
+    static final int dpadWIndex = 6;
+    static final int dpadNWIndex = 7;
+    static final int buttonAIndex = 8;
+    static final int buttonBIndex = 9;
+    static final int buttonXIndex = 10;
+    static final int buttonYIndex= 11;
+    static final int leftShoulderIndex = 12;
+    static final int rightShoulderIndex = 13;
+    static final int leftTriggerIndex = 14;
+    static final int rightTriggerIndex = 15;
+    static final int rightThumbButtonIndex = 16;
+    static final int leftThumbButtonIndex = 17;
+    
+    HeaderType[][] controllerHeaders = new HeaderType[NUMCONTROLLER][NUMHEADERS];
+    int[][] controllerValues = new int[NUMCONTROLLER][NUMHEADERS];
+    
+    HeaderType[][] leftThumbHeaders = new HeaderType[360][NUMHEADERS];
+    HeaderType[][] rightThumbHeaders = new HeaderType[360][NUMHEADERS];
+    
+    int[][] leftThumbValues = new int[360][NUMHEADERS];
+    int[][] rightThumbValues = new int[360][NUMHEADERS];
+    
+    
+    
     public boolean up, down, left, right;
-    public Keyboard()
+    public Keyboard()	// keyboard object kind of houses XboxController stuff too
     {
     	updateKeyMappings();
-    	
+    	updateControllerMappings();
     }
     private void updateKeyMappings()
     {
-    	for(int i = 0; i < NUMKEYS; i++)	// reset all mappings values
-    	{
-	    	for(int j = 0; j < NUMHEADERS; j++)
-	    	{
-	    		headers[i][j] = null;
-	    		values[i][j] = 0;
-	    	}
-    	}
+    	headers = new HeaderType[NUMKEYS][NUMHEADERS];	// discard old values
+    	values = new int[NUMKEYS][NUMHEADERS];
+    	    
     	File file = new File("keyMappings.txt");
     	Scanner reader;
     	int keycode, value;
@@ -87,20 +114,81 @@ public class Keyboard implements KeyListener
 			e.printStackTrace();
 		}
     }
+    
+    private void updateControllerMappings()
+    {
+    	// drop old values and start new
+    	controllerHeaders = new HeaderType[NUMCONTROLLER][NUMHEADERS];
+        controllerValues = new int[NUMCONTROLLER][NUMHEADERS];
+        
+        leftThumbHeaders = new HeaderType[360][NUMHEADERS];
+        rightThumbHeaders = new HeaderType[360][NUMHEADERS];
+        
+        leftThumbValues = new int[360][NUMHEADERS];
+        rightThumbValues = new int[360][NUMHEADERS];
+        
+    	File file = new File("controllerMappings.txt");
+    	Scanner reader;
+    	int value;
+    	HeaderType header;
+    	String str;
+		try {
+			reader = new Scanner(file);
+			reader.nextLine();	// skip first line
+			
+			for(int x = 0; x < NUMCONTROLLER; x++)	// fill in all non-joystick values
+			{
+				reader.next();	// skip string used to say what each value is
+				if(!reader.hasNextInt())	// if there is Not an integer next
+				{
+					for(int i = 0; i < NUMHEADERS; i++)
+					{
+						if(reader.hasNext() && !reader.hasNextInt())	// keep checking for expected input
+						{
+							try {
+								str = reader.next();
+								if(str.contains(";"))	// put semicolon by it self at end of line to tell it to stop looking for new HeaderTypes
+									break;	//go to next line
+								header = HeaderType.valueOf(str);
+								if(reader.hasNextInt())
+								{
+									value = reader.nextInt();
+									
+									controllerHeaders[x][i] = header;
+									controllerValues[x][i] = value;
+								}
+							} catch (IllegalArgumentException e) {	// string input was not the name of a header
+								reader.nextLine();	// go to next line binding
+								break;	// break out of for loop
+							}
+						}
+					}
+				}
+			}
+			reader.close();
+		} catch (Exception e) {
+			System.err.println("Problem opening controllerMappings file");
+			e.printStackTrace();
+		}
+    }
+    
     public void update() //checks every cycle if key is pressed or released
     {
     	if(keys[27])
     	{
 			disableController = true;
+			System.out.println("Keyboard active.");
     	}
     	else if(keys[112])
     	{
 			disableController = false;
+			System.out.println("Controller active");
     	}
     	else if(keys[113])
     	{
 			updateKeyMappings();
-			System.out.println("updating key mappings");
+			updateControllerMappings();
+			System.out.println("updating input mappings");
     	}
     	
     	if(disableController)	// only do key stuff if not using controller
