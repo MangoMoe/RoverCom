@@ -29,6 +29,8 @@ public class ServerMain implements Runnable
 	private Rover hal;
 	private XboxController xc;
 	
+	private static boolean brake = false;	// figure out how to make this non-static
+	
 	// Structure/required to run
 	private Keyboard keyboard;
 	private Canvas canvas;
@@ -43,14 +45,8 @@ public class ServerMain implements Runnable
 		// setup
     	hal = new Rover();
     	com = new CommonData();	// initialize common data
-    	keyboard = new Keyboard();
     	canvas = new Canvas();
     	frame = new JFrame();
-    	
-    	canvas.addKeyListener(keyboard);	// add listener to take keyboard input
-    	Dimension size = new Dimension(600, 300);
-    	//^^^^^^ replace with pre-defined values
-    	canvas.setPreferredSize(size);
     	
     	Scanner reader = new Scanner(System.in);	// initialize some stuff
     	
@@ -62,7 +58,7 @@ public class ServerMain implements Runnable
     	if (!xc.isConnected())	// if xbox controller not connected tell error
         {
           JOptionPane.showMessageDialog(null, 
-            "Xbox controller not connected. Press escape to activate keyboard input or connect controller and restart program. Press F2 at any time to update input mappings.",
+            "Xbox controller not connected. Press F2 at any time to update keyboard mappings.",
             "Startup Information", 
             JOptionPane.WARNING_MESSAGE);
           xc.release();
@@ -77,6 +73,12 @@ public class ServerMain implements Runnable
     		ControllerConnected = true;
     		xc.addXboxControllerListener(Keyboard.initializeAdapter(xc));	// initialize input
     	}
+
+    	keyboard = new Keyboard(ControllerConnected);
+    	canvas.addKeyListener(keyboard);	// add listener to take keyboard input
+    	Dimension size = new Dimension(600, 300);
+    	//^^^^^^ replace with pre-defined values
+    	canvas.setPreferredSize(size);
 		
 	}
 	
@@ -139,6 +141,9 @@ public class ServerMain implements Runnable
                 updates++;
                 delta--;
             } //limited to updating 60 times per second
+            
+            brake = false;	// reset brake every second
+            
             //render(); //unlimited updating, called as many times as possible
 //unlimited rendering???
             frames++; //increment number of frames per second
@@ -175,9 +180,13 @@ public class ServerMain implements Runnable
     public static void requestPacket(HeaderType header, int data)	//place to put packet validation logic
     {
     	header.setCurrentValue(data);	// set new value
-    	data = header.getCurrentValue();
+    	data = header.getCurrentValue();	// setting value has validation, so get validated value
     	
-    	createPacket(header, data);
+    	if(header.equals(HeaderType.driveAll) && data == 1500)	// we are sending a stop packet, turn on brake
+    		brake = true;
+    	
+    	if(!(brake && header.getByte() >= (byte)0x10 && header.getByte() < (byte)0x20 && data != 1500))	// if we're braking don't send packets to move wheels
+	    	createPacket(header, data);
     }
     
     

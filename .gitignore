@@ -215,5 +215,6 @@ pip-log.txt
 .mr.developer.cfg
 
 #other stuff
-keyMappings.txt
 .gitignore
+controllerMappings.txt
+keyMappings.txt

@@ -18,3 +18,5 @@
 100	driveLeft		1250
 101	driveAll		1250
 102	driveRight		1250
+// space == brake
+32	driveAll		1500

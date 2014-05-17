@@ -60,8 +60,10 @@ public class Keyboard implements KeyListener
     
     
     public boolean up, down, left, right;
-    public Keyboard()	// keyboard object kind of houses XboxController stuff too
+    public Keyboard(boolean controllerConnected)	// keyboard object kind of houses XboxController stuff too
     {
+    	disableController = !controllerConnected;	// change default input based on controller connection
+    	
     	updateKeyMappings();
     	updateControllerMappings();
     }
@@ -165,6 +167,95 @@ public class Keyboard implements KeyListener
 					}
 				}
 			}
+			
+			// Right Joystick
+			reader.nextLine();	// skip line explaining that joystick values start now
+			reader.nextLine();
+			int start = 0, stop = 0;
+			while(reader.hasNextInt())	// loop through listed numbers, taking in degree values for joystick input
+			{
+				start = reader.nextInt();
+				if(start > 359)	// bounds checking
+					start = 359;
+				if(start < 0)
+					start = 0;
+				if(reader.hasNextInt())
+				{
+					stop = reader.nextInt();
+					if(stop > 359)	// bounds checking
+						stop = 359;
+					if(stop < 0)
+						stop = 0;
+					for(int i = 0; i < NUMHEADERS; i++)
+					{
+						if(reader.hasNext() && !reader.hasNextInt())	// keep checking for expected input
+						{
+							try {
+								str = reader.next();
+								if(str.contains(";"))	// put semicolon by it self at end of line to tell it to stop looking for new HeaderTypes
+									break;	//go to next line
+								header = HeaderType.valueOf(str);
+								if(reader.hasNextInt())
+								{
+									value = reader.nextInt();
+									
+									for(int j = start; j <= stop; j++)	// go to each index in array between two angle values and add those header types
+									{
+										rightThumbHeaders[j][i] = header;
+										rightThumbValues[j][i] = value;
+									}
+								}
+							} catch (IllegalArgumentException e) {	// string input was not the name of a header
+								reader.nextLine();	// go to next line binding
+								break;	// break out of for loop
+							}
+						}
+					}
+				}
+			}
+			// Left joystick
+			reader.nextLine();	// skip line explaining that joystick values start now
+			while(reader.hasNextInt())	// loop through listed numbers, taking in degree values for left joystick input
+			{
+				start = reader.nextInt();
+				if(start > 359)	// bounds checking
+					start = 359;
+				if(start < 0)
+					start = 0;
+				if(reader.hasNextInt())
+				{
+					stop = reader.nextInt();
+					if(stop > 359)	// bounds checking
+						stop = 359;
+					if(stop < 0)
+						stop = 0;
+					for(int i = 0; i < NUMHEADERS; i++)
+					{
+						if(reader.hasNext() && !reader.hasNextInt())	// keep checking for expected input
+						{
+							try {
+								str = reader.next();
+								if(str.contains(";"))	// put semicolon by it self at end of line to tell it to stop looking for new HeaderTypes
+									break;	//go to next line
+								header = HeaderType.valueOf(str);
+								if(reader.hasNextInt())
+								{
+									value = reader.nextInt();
+									
+									for(int j = start; j <= stop; j++)	// go to each index in array between two angle values and add those header types
+									{
+										leftThumbHeaders[j][i] = header;
+										leftThumbValues[j][i] = value;
+									}
+								}
+							} catch (IllegalArgumentException e) {	// string input was not the name of a header
+								reader.nextLine();	// go to next line binding
+								break;	// break out of for loop
+							}
+						}
+					}
+				}
+			}
 			reader.close();
 		} catch (Exception e) {
 			System.err.println("Problem opening controllerMappings file");
@@ -216,7 +307,7 @@ public class Keyboard implements KeyListener
 	        }
 	        if(!anyKeyPressed)
 	        {
-	        	ServerMain.requestPacket(HeaderType.driveAll, 1500);	// send stop packet if no keys pressed
+	        	ServerMain.requestPacket(HeaderType.driveAll, 1500);	// send brake packet if no keys pressed
 	        }
     	}
         if(!disableController && ServerMain.ControllerConnected)

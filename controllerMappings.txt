@@ -1,4 +1,4 @@
-// Maintain this order! Lines end with a semicolon by itself
+// Maintain this order! Lines end with a semicolon by itself, you can only put comments after semicolons
 dpad0:		armTurretCommand	1	drive6	1 ;
 dpad1:		armTurretCommand	2	drive6	1 ;
 dpad2:		armTurretCommand	3	drive6	1 ;
@@ -17,3 +17,8 @@ leftTrigger:	armTurretCommand	15	drive6	1 ;
 rightTrigger:	armTurretCommand	16	drive6	1 ;
 leftThumb:	armTurretCommand	17	drive6	1 ;
 rightThumb:	armTurretCommand	18	drive6	1 ;
+//Right Joystick
+0 180	systemConfirmation	0	;
+181 360	drive6			1500	;
+//left Joystick
+0 360	systemConfirmation	0	;
