@@ -22,9 +22,21 @@ public class Keyboard implements KeyListener
     private boolean anyKeyPressed;
     
     // XboxController things
-    static double leftMagnitude = 0, rightMagnitude = 0;
-    static double leftDirection = 0, rightDirection = 0;
-    static boolean brake = false, paused = false;
+    static double leftThumbMagnitude = 0.0, rightThumbMagnitude = 0.0;
+    static double leftThumbDirection = 0.0, rightThumbDirection = 0.0;
+    static double leftTriggerMagnitude = 0.0, rightTriggerMagnitude = 0.0;
+    static int dpadDirection = 0;	// values between 0 and 7
+    static boolean paused = false,
+    		dpadPressed = false,
+    		buttonAPressed = false,
+			buttonBPressed = false,
+			buttonXPressed = false,
+			buttonYPressed = false,
+			leftShoulderPressed = false,
+    		rightShoulderPressed = false,
+    		leftThumbPressed = false,
+    		rightThumbPressed = false;
+
     private boolean disableController = false;
     
     final int NUMCONTROLLER = 18;
@@ -168,53 +180,10 @@ public class Keyboard implements KeyListener
 				}
 			}
 			
-			// Right Joystick
+			// Left joystick
 			reader.nextLine();	// skip line explaining that joystick values start now
 			reader.nextLine();
 			int start = 0, stop = 0;
-			while(reader.hasNextInt())	// loop through listed numbers, taking in degree values for joystick input
-			{
-				start = reader.nextInt();
-				if(start > 359)	// bounds checking
-					start = 359;
-				if(start < 0)
-					start = 0;
-				if(reader.hasNextInt())
-				{
-					stop = reader.nextInt();
-					if(stop > 359)	// bounds checking
-						stop = 359;
-					if(stop < 0)
-						stop = 0;
-					for(int i = 0; i < NUMHEADERS; i++)
-					{
-						if(reader.hasNext() && !reader.hasNextInt())	// keep checking for expected input
-						{
-							try {
-								str = reader.next();
-								if(str.contains(";"))	// put semicolon by it self at end of line to tell it to stop looking for new HeaderTypes
-									break;	//go to next line
-								header = HeaderType.valueOf(str);
-								if(reader.hasNextInt())
-								{
-									value = reader.nextInt();
-									
-									for(int j = start; j <= stop; j++)	// go to each index in array between two angle values and add those header types
-									{
-										rightThumbHeaders[j][i] = header;
-										rightThumbValues[j][i] = value;
-									}
-								}
-							} catch (IllegalArgumentException e) {	// string input was not the name of a header
-								reader.nextLine();	// go to next line binding
-								break;	// break out of for loop
-							}
-						}
-					}
-				}
-			}
-			// Left joystick
-			reader.nextLine();	// skip line explaining that joystick values start now
 			while(reader.hasNextInt())	// loop through listed numbers, taking in degree values for left joystick input
 			{
 				start = reader.nextInt();
@@ -246,6 +215,50 @@ public class Keyboard implements KeyListener
 									{
 										leftThumbHeaders[j][i] = header;
 										leftThumbValues[j][i] = value;
+									}
+								}
+							} catch (IllegalArgumentException e) {	// string input was not the name of a header
+								reader.nextLine();	// go to next line binding
+								break;	// break out of for loop
+							}
+						}
+					}
+				}
+			}
+			// Right Joystick
+			reader.nextLine();	// skip line explaining that joystick values start now
+			reader.nextLine();
+			while(reader.hasNextInt())	// loop through listed numbers, taking in degree values for joystick input
+			{
+				start = reader.nextInt();
+				if(start > 359)	// bounds checking
+					start = 359;
+				if(start < 0)
+					start = 0;
+				if(reader.hasNextInt())
+				{
+					stop = reader.nextInt();
+					if(stop > 359)	// bounds checking
+						stop = 359;
+					if(stop < 0)
+						stop = 0;
+					for(int i = 0; i < NUMHEADERS; i++)
+					{
+						if(reader.hasNext() && !reader.hasNextInt())	// keep checking for expected input
+						{
+							try {
+								str = reader.next();
+								if(str.contains(";"))	// put semicolon by it self at end of line to tell it to stop looking for new HeaderTypes
+									break;	//go to next line
+								header = HeaderType.valueOf(str);
+								if(reader.hasNextInt())
+								{
+									value = reader.nextInt();
+									
+									for(int j = start; j <= stop; j++)	// go to each index in array between two angle values and add those header types
+									{
+										rightThumbHeaders[j][i] = header;
+										rightThumbValues[j][i] = value;
 									}
 								}
 							} catch (IllegalArgumentException e) {	// string input was not the name of a header
@@ -314,18 +327,103 @@ public class Keyboard implements KeyListener
         {
 	        if(!paused)
 	        {
-		        if((leftDirection > 270.0 || leftDirection < 90.0) && !brake)	// Left Thumb forward
-		        	ServerMain.requestPacket(HeaderType.driveLeft, (int)(1500 + (250 * leftMagnitude)));
-		        else if (!brake)	// Left Thumb backward
-		        	ServerMain.requestPacket(HeaderType.driveLeft, (int)(1500 - (250 * leftMagnitude)));
-		        else
-		        	ServerMain.requestPacket(HeaderType.driveAll, 1500); // stop!!!!
-		        if((rightDirection > 270.0 || rightDirection < 90.0) && !brake)	// Right Thumb Forward
-		        	ServerMain.requestPacket(HeaderType.driveRight, (int)(1500 + (250 * rightMagnitude)));
-		        else if (!brake)	// Right Thumb Backward
-		        	ServerMain.requestPacket(HeaderType.driveRight, (int)(1500 - (250 * rightMagnitude)));
-		        else
-		        	ServerMain.requestPacket(HeaderType.driveAll, 1500);
+		        if(dpadPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[dpadDirection][i], controllerValues[dpadDirection][i]);
+		        }
+		        if(buttonAPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[buttonAIndex][i], controllerValues[buttonAIndex][i]);
+		        }
+		        if(buttonBPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[buttonBIndex][i], controllerValues[buttonBIndex][i]);
+		        }
+		        if(buttonXPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[buttonXIndex][i], controllerValues[buttonXIndex][i]);
+		        }
+		        if(buttonYPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[buttonYIndex][i], controllerValues[buttonYIndex][i]);
+		        }
+		        if(leftShoulderPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[leftShoulderIndex][i], controllerValues[leftShoulderIndex][i]);
+		        }
+		        if(rightShoulderPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[rightShoulderIndex][i], controllerValues[rightShoulderIndex][i]);
+		        }
+		        if(leftTriggerMagnitude > 0.0)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        	{
+		        		if(controllerHeaders[leftTriggerIndex][i] != null)
+		        		{
+			        		if((controllerHeaders[leftTriggerIndex][i].getByte() & (byte)0xF0) == (byte)0x10)	// drive packet
+			        			ServerMain.requestPacket(controllerHeaders[leftTriggerIndex][i], (int)(1500 + ((double)controllerValues[leftTriggerIndex][i] * leftTriggerMagnitude)));
+			        		else
+			        			ServerMain.requestPacket(controllerHeaders[leftTriggerIndex][i], (int)((double)controllerValues[leftTriggerIndex][i] * leftTriggerMagnitude));
+		        		}
+		        	}
+		        }
+		        if(rightTriggerMagnitude > 0.0)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        	{
+		        		if(controllerHeaders[rightTriggerIndex][i] != null)
+		        		{
+			        		if((controllerHeaders[rightTriggerIndex][i].getByte() & (byte)0xF0) == (byte)0x10)	// drive packet
+			        			ServerMain.requestPacket(controllerHeaders[rightTriggerIndex][i], (int)(1500 + ((double)controllerValues[rightTriggerIndex][i] * rightTriggerMagnitude)));
+			        		else
+			        			ServerMain.requestPacket(controllerHeaders[rightTriggerIndex][i], (int)((double)controllerValues[rightTriggerIndex][i] * rightTriggerMagnitude));
+		        		}
+		        	}
+		        }
+		        if(leftThumbPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[leftThumbButtonIndex][i], controllerValues[leftThumbButtonIndex][i]);
+		        }
+		        if(rightThumbPressed)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        		ServerMain.requestPacket(controllerHeaders[rightThumbButtonIndex][i], controllerValues[rightThumbButtonIndex][i]);
+		        }
+		        if(leftThumbMagnitude > 0.0)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        	{
+		        		if(leftThumbHeaders[(int)leftThumbDirection][i] != null)
+		        		{
+			        		if((leftThumbHeaders[(int)leftThumbDirection][i].getByte() & (byte)0xF0) == (byte)0x10)	// drive packet
+			        			ServerMain.requestPacket(leftThumbHeaders[(int)leftThumbDirection][i], (int)(1500 + ((double)leftThumbValues[(int)leftThumbDirection][i] * leftThumbMagnitude)));
+			        		else
+			        			ServerMain.requestPacket(leftThumbHeaders[(int)leftThumbDirection][i], (int)((double)leftThumbValues[(int)leftThumbDirection][i] * leftThumbMagnitude));
+		        		}
+		        	}
+		        }
+		        if(rightThumbMagnitude > 0.0)
+		        {
+		        	for(int i = 0; i < NUMHEADERS; i++)
+		        	{
+		        		if(rightThumbHeaders[(int)rightThumbDirection][i] != null)
+		        		{
+			        		if((rightThumbHeaders[(int)rightThumbDirection][i].getByte() & (byte)0xF0) == (byte)0x10)	// drive packet
+			        			ServerMain.requestPacket(rightThumbHeaders[(int)rightThumbDirection][i], (int)(1500 + ((double)rightThumbValues[(int)rightThumbDirection][i] * rightThumbMagnitude)));
+			        		else
+			        			ServerMain.requestPacket(rightThumbHeaders[(int)rightThumbDirection][i], (int)((double)rightThumbValues[(int)rightThumbDirection][i] * rightThumbMagnitude));
+		        		}
+		        	}
+		        }
 	        }
 	        else
 	        	ServerMain.requestPacket(HeaderType.driveAll, 1500);
@@ -354,47 +452,26 @@ public class Keyboard implements KeyListener
     {	//http://www.aplu.ch/classdoc/xbox/ch/aplu/xboxcontroller/XboxControllerAdapter.html
     	return new XboxControllerAdapter()
     	{
-    		public void leftThumbMagnitude(double magnitude)
+    		public void dpad(int direction, boolean pressed)
     		{
-    			leftMagnitude = magnitude;
+    			dpadDirection = direction;
+    			dpadPressed = pressed;
     		}
-    		public void leftThumbDirection(double direction)
+    		public void buttonA(boolean pressed)
     		{
-    			leftDirection = direction;
+    			buttonAPressed = pressed;
     		}
-    		public void rightThumbMagnitude(double magnitude)
+    		public void buttonB(boolean pressed)
     		{
-    			rightMagnitude = magnitude;
+    			buttonBPressed = pressed;
     		}
-    		public void rightThumbDirection(double direction)
+    		public void buttonX(boolean pressed)
     		{
-    			rightDirection = direction;
+    			buttonXPressed = pressed;
     		}
-    		
-    		public void leftShoulder(boolean pressed)
+    		public void buttonY(boolean pressed)
     		{
-    			brake = pressed;
-    		}
-    		
-    		public void rightShoulder(boolean pressed)
-    		{
-    			brake = pressed;
-    		}
-    		
-    		public void leftTrigger(double value)
-    		{
-    			if(value > 0.1)
-    				brake = true;
-    			else
-    				brake = false;
-    		}
-    		
-    		public void rightTrigger(double value)
-    		{
-    			if(value > 0.1)
-    				brake = true;
-    			else
-    				brake = false;
+    			buttonYPressed = pressed;
     		}
     		
     		public void start(boolean pressed)
@@ -408,16 +485,45 @@ public class Keyboard implements KeyListener
     			}
     		}
     		
-    		public void buttonA(boolean pressed)
+    		public void leftShoulder(boolean pressed)
     		{
-    			ServerMain.requestPacket(HeaderType.armWristFlapCommand, 100);
-    			xc.vibrate(0, 65000);
+    			leftShoulderPressed = pressed;
     		}
-    		
-    		public void buttonB(boolean pressed)
+    		public void rightShoulder(boolean pressed)
     		{
-    			ServerMain.requestPacket(HeaderType.armWristFlapCommand, -100);
-    			xc.vibrate(0, 0);
+    			rightShoulderPressed = pressed;
+    		}
+    		public void leftTrigger(double value)
+    		{
+    			leftTriggerMagnitude = value;
+    		}
+    		public void rightTrigger(double value)
+    		{
+    			rightTriggerMagnitude = value;
+    		}
+    		public void leftThumb(boolean pressed)
+    		{
+    			leftThumbPressed = pressed;
+    		}
+    		public void rightThumb(boolean pressed)
+    		{
+    			rightThumbPressed = pressed;
+    		}
+    		public void leftThumbMagnitude(double magnitude)
+    		{
+    			leftThumbMagnitude = magnitude;
+    		}
+    		public void leftThumbDirection(double direction)
+    		{
+    			leftThumbDirection = direction;
+    		}
+    		public void rightThumbMagnitude(double magnitude)
+    		{
+    			rightThumbMagnitude = magnitude;
+    		}
+    		public void rightThumbDirection(double direction)
+    		{
+    			rightThumbDirection = direction;
     		}
     	};
     }

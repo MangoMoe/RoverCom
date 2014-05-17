@@ -1,24 +1,27 @@
-// Maintain this order! Lines end with a semicolon by itself, you can only put comments after semicolons
-dpad0:		armTurretCommand	1	drive6	1 ;
-dpad1:		armTurretCommand	2	drive6	1 ;
-dpad2:		armTurretCommand	3	drive6	1 ;
-dpad3:		armTurretCommand	4	drive6	1 ;
-dpad4:		armTurretCommand	5	drive6	1 ;
-dpad5:		armTurretCommand	6	drive6	1 ;
-dpad6:		armTurretCommand	7	drive6	1 ;
-dpad7:		armTurretCommand	8	drive6	1 ;
-buttonA:	armTurretCommand	9	drive6	1 ;
-buttonB:	armTurretCommand	10	drive6	1 ;
-buttonX:	armTurretCommand	11	drive6	1 ;
-buttonY:	armTurretCommand	12	drive6	1 ;
-leftShoulder:	armTurretCommand	13	drive6	1 ;
-rightShoulder:	armTurretCommand	14	drive6	1 ;
-leftTrigger:	armTurretCommand	15	drive6	1 ;
-rightTrigger:	armTurretCommand	16	drive6	1 ;
-leftThumb:	armTurretCommand	17	drive6	1 ;
-rightThumb:	armTurretCommand	18	drive6	1 ;
-//Right Joystick
-0 180	systemConfirmation	0	;
-181 360	drive6			1500	;
+// Maintain this order! Lines end with a semicolon BY ITSELF, make sure it is not touching any of your values! you can only put comments after semicolons
+dpad0:		drive4	1001	drive6	1	;
+dpad1:		drive4	1002	drive6	1	;
+dpad2:		drive4	1003	drive6	1	;
+dpad3:		drive4	1004	drive6	1	;
+dpad4:		drive4	1005	drive6	1	;
+dpad5:		drive4	1006	drive6	1	;
+dpad6:		drive4	1007	drive6	1	;
+dpad7:		drive4	1008	drive6	1	;
+buttonA:	drive4	1009	drive6	1	;
+buttonB:	drive4	1010	drive6	1	;
+buttonX:	drive4	1011	drive6	1	;
+buttonY:	drive4	1012	drive6	1	;
+leftShoulder:	drive4	1013	drive6	1	;
+rightShoulder:	drive4	1014	drive6	100	;
+leftTrigger:	driveAll	0		;
+rightTrigger:	driveAll	0		;
+leftThumb:	drive4	1017	drive6	1	;
+rightThumb:	drive4	1018	drive6	1	;
 //left Joystick
-0 360	systemConfirmation	0	;
+0 90	driveLeft	250	;
+91 270	driveLeft	-250	;
+271 360 driveLeft	250	;
+//right Joystick
+0 90	driveRight	250	;
+91 270	driveRight	-250	;
+271 360 driveRight	250	;

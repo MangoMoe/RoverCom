@@ -179,14 +179,17 @@ public class ServerMain implements Runnable
     
     public static void requestPacket(HeaderType header, int data)	//place to put packet validation logic
     {
-    	header.setCurrentValue(data);	// set new value
-    	data = header.getCurrentValue();	// setting value has validation, so get validated value
-    	
-    	if(header.equals(HeaderType.driveAll) && data == 1500)	// we are sending a stop packet, turn on brake
-    		brake = true;
-    	
-    	if(!(brake && header.getByte() >= (byte)0x10 && header.getByte() < (byte)0x20 && data != 1500))	// if we're braking don't send packets to move wheels
-	    	createPacket(header, data);
+    	if(header != null)
+    	{
+	    	header.setCurrentValue(data);	// set new value
+	    	data = header.getCurrentValue();	// setting value has validation, so get validated value
+	    	
+	    	if(header.equals(HeaderType.driveAll) && data == 1500)	// we are sending a stop packet, turn on brake
+	    		brake = true;
+	    	
+	    	if(!(brake && (header.getByte() & (byte)0xF0) == (byte)0x10 && data != 1500))	// if we're braking don't send packets to move wheels
+		    	createPacket(header, data);
+    	}
     }
     
     
