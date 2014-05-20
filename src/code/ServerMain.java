@@ -26,7 +26,6 @@ public class ServerMain implements Runnable
 	
 	// Logic
 	private static CommonData com;	// must be static for some reason
-	private Rover hal;
 	private XboxController xc;
 	
 	private static boolean brake = false;	// figure out how to make this non-static
@@ -43,7 +42,6 @@ public class ServerMain implements Runnable
 	public ServerMain()
 	{
 		// setup
-    	hal = new Rover();
     	com = new CommonData();	// initialize common data
     	canvas = new Canvas();
     	frame = new JFrame();
@@ -195,9 +193,9 @@ public class ServerMain implements Runnable
     
     private static void createPacket(HeaderType header, int data)
     {
-    	ByteBuffer buffer = ByteBuffer.allocate(5);	// 5 bytes
+    	ByteBuffer buffer = ByteBuffer.allocate(3);	// 3 bytes
     	buffer.put(header.getByte());
-    	buffer.putInt(data);
+    	buffer.putShort((short)data);
     	buffer.flip();
     	
     	com.addPacketToSend(buffer.array());
