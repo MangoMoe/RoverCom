@@ -118,11 +118,12 @@ public enum HeaderType {	// enumeration of udp packet header types for easy acce
 			return null;
 		else return this.LOGICAL_PAIR;
 	}
-	public int getCurrentValue()
+	public synchronized int getCurrentValue()
 	{
 		return currentValue;
 	}
-	public void setCurrentValue(int newValue)	// simple validation here, add more?
+
+	public synchronized void setCurrentValue(int newValue)	// simple validation here, add more?
 	{
 		if(this.isAdditive())
 		{

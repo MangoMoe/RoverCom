@@ -35,7 +35,7 @@ public class InputThread extends Thread
 	        	socket.receive(packet);
 	        	
 	        	com.addRecievedPacket(packet.getData());	// add recieved packet to common data buffer
-	        	System.out.println("Input Thread has recieved packet");
+	        	//System.out.println("Input Thread has recieved packet");
 	        }
     	}
     // more catch statements?
@@ -52,6 +52,6 @@ public class InputThread extends Thread
     @Override
     public void interrupt(){
       super.interrupt();  
-      this.socket.close();	// if inerrupted we need to close the socket so it doesn't just wait for udp thread
+      this.socket.close();	// if inerrupted we need to close the socket so it doesn't just wait for udp packet
     }
 }

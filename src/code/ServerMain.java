@@ -23,6 +23,7 @@ public class ServerMain implements Runnable
 	// Threads
 	InputThread input;
 	BroadcastThread output;
+	SerialThread serial;
 	
 	// Logic
 	private static CommonData com;	// must be static for some reason
@@ -89,6 +90,8 @@ public class ServerMain implements Runnable
 			input.start();
 			output = new BroadcastThread(com, address);
 			output.start();
+			serial = new SerialThread(com);
+			serial.start();
 			
 			// Graphics type threads
 			running = true;
@@ -109,10 +112,12 @@ public class ServerMain implements Runnable
 		
 		input.interrupt();	// interrupt the inputThread to shut it down
     	output.interrupt();
+    	serial.interrupt();
     	
     	try {
 			input.join();	// wait for other threads to close
 			output.join();
+			serial.join();
 			thread.join();
 		} catch (InterruptedException e) {
 			System.out.println("ServerMain interrupted while attempting to join threads");
@@ -175,7 +180,7 @@ public class ServerMain implements Runnable
     	Interface.start();
     }
     
-    public static void requestPacket(HeaderType header, int data)	//place to put packet validation logic
+    public static synchronized void requestPacket(HeaderType header, int data)	//place to put packet validation logic
     {
     	if(header != null)
     	{

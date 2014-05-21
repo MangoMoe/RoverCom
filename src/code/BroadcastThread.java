@@ -14,7 +14,7 @@ public class BroadcastThread extends Thread
     protected InetAddress address = null;
 
     public BroadcastThread(CommonData common, String host ) throws IOException {
-    	this("QuoteServerThread", common, host);
+    	this("UDP Broadcast Thread", common, host);
     }
 
     public BroadcastThread(String name, CommonData common, String host) throws IOException {
