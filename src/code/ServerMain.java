@@ -16,6 +16,7 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import GUI.RFrame;
 import ch.aplu.xboxcontroller.XboxController;
 
 
@@ -44,10 +45,7 @@ public class ServerMain implements Runnable
 	private boolean running = false;
 	
 	// GUI stuff
-	private Canvas canvas;
-	private JFrame frame;
-	private Container panel;
-	private JLabel testLabel;
+	private RFrame GUIFrame;
 	
 	
 	public static boolean ControllerConnected = false;	// make not static?
@@ -56,13 +54,7 @@ public class ServerMain implements Runnable
 	{
 		// setup
     	com = new CommonData();	// initialize common data
-    	canvas = new Canvas();
-    	frame = new JFrame();
-    	panel = frame.getContentPane();
-    	testLabel = new JLabel("This is a test");
-    	
-    	frame.add(canvas);
-    	//panel.add(testLabel);
+    	GUIFrame = new RFrame();
     	
     	Scanner reader = new Scanner(System.in);	// initialize some stuff
     	
@@ -91,10 +83,7 @@ public class ServerMain implements Runnable
     	}
 
     	keyboard = new Keyboard(ControllerConnected);
-    	canvas.addKeyListener(keyboard);	// add listener to take keyboard input
-    	Dimension size = new Dimension(600, 300);
-    	//^^^^^^ replace with pre-defined values
-    	canvas.setPreferredSize(size);
+    	GUIFrame.addKeyListener(keyboard);	// add listener to take keyboard input
 		
 	}
 	
@@ -173,7 +162,7 @@ public class ServerMain implements Runnable
             {
                 timer += 1000;//reset timer
                 //System.out.println(updates + " ups, " + frames + " fps");//display fps and updates per second
-                frame.setTitle("Rover Time!" + "    |   " + updates + " ups, " + frames + " fps");//display title of program and fps counter
+                GUIFrame.setTitle("Rover Time!" + "    |   " + updates + " ups, " + frames + " fps");//display title of program and fps counter
                 frames = 0;
                 updates = 0;
             }
@@ -185,14 +174,12 @@ public class ServerMain implements Runnable
     {
     	// instantiate new instance of this class
     	ServerMain Interface = new ServerMain();	// come up with better name?
-    	
-    	Interface.frame.setResizable(false);//resizing can cause graphics errors, make sure to do first
-        Interface.frame.setTitle("Rover Base Station");
-        //Interface.frame.add(Interface.canvas);//adds instance of game to the window (can add because subclass of canvas)
-        Interface.frame.pack();//set size of Interface.frame based on component (canvas size)
-        Interface.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed
-        Interface.frame.setLocationRelativeTo(null);//centers window in middle of screen
-        Interface.frame.setVisible(true);//makes sure window can be seen
+    	/*Interface.GUIFrame.setResizable(false);//resizing can cause graphics errors, make sure to do first
+        Interface.GUIFrame.setTitle("Rover Base Station");
+        Interface.GUIFrame.pack();//set size of Interface.frame based on component (canvas size)
+        Interface.GUIFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed*/
+    	Interface.GUIFrame.setLocationRelativeTo(null);//centers window in middle of screen
+        Interface.GUIFrame.setVisible(true);//makes sure window can be seen
     	
     	Interface.start();
     }
