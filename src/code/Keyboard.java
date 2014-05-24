@@ -310,7 +310,7 @@ public class Keyboard implements KeyListener
 	        		{
 		        		if(headers[i][j] != null)	// only create packets for defined header values
 		        		{
-		        			ServerMain.requestPacket(headers[i][j], values[i][j]);
+		        			ServerMain.requestPacket(headers[i][j], values[i][j],false);
 		        			//System.out.println("Packet: " + headers[i] + " value: " + values[i]);
 		        			//System.out.println("Creating packet for " + KeyEvent.getKeyText(i));
 		        		}
@@ -320,7 +320,7 @@ public class Keyboard implements KeyListener
 	        }
 	        if(!anyKeyPressed)
 	        {
-	        	ServerMain.requestPacket(HeaderType.driveAll, 1500);	// send brake packet if no keys pressed
+	        	ServerMain.requestPacket(HeaderType.driveAll, 1500,false);	// send brake packet if no keys pressed
 	        }
     	}
         if(!disableController && ServerMain.ControllerConnected)
@@ -330,37 +330,37 @@ public class Keyboard implements KeyListener
 		        if(dpadPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[dpadDirection][i], controllerValues[dpadDirection][i]);
+		        		ServerMain.requestPacket(controllerHeaders[dpadDirection][i], controllerValues[dpadDirection][i],false);
 		        }
 		        if(buttonAPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[buttonAIndex][i], controllerValues[buttonAIndex][i]);
+		        		ServerMain.requestPacket(controllerHeaders[buttonAIndex][i], controllerValues[buttonAIndex][i],false);
 		        }
 		        if(buttonBPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[buttonBIndex][i], controllerValues[buttonBIndex][i]);
+		        		ServerMain.requestPacket(controllerHeaders[buttonBIndex][i], controllerValues[buttonBIndex][i],false);
 		        }
 		        if(buttonXPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[buttonXIndex][i], controllerValues[buttonXIndex][i]);
+		        		ServerMain.requestPacket(controllerHeaders[buttonXIndex][i], controllerValues[buttonXIndex][i],false);
 		        }
 		        if(buttonYPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[buttonYIndex][i], controllerValues[buttonYIndex][i]);
+		        		ServerMain.requestPacket(controllerHeaders[buttonYIndex][i], controllerValues[buttonYIndex][i],false);
 		        }
 		        if(leftShoulderPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[leftShoulderIndex][i], controllerValues[leftShoulderIndex][i]);
+		        		ServerMain.requestPacket(controllerHeaders[leftShoulderIndex][i], controllerValues[leftShoulderIndex][i],false);
 		        }
 		        if(rightShoulderPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[rightShoulderIndex][i], controllerValues[rightShoulderIndex][i]);
+		        		ServerMain.requestPacket(controllerHeaders[rightShoulderIndex][i], controllerValues[rightShoulderIndex][i],false);
 		        }
 		        if(leftTriggerMagnitude > 0.0)
 		        {
@@ -369,9 +369,9 @@ public class Keyboard implements KeyListener
 		        		if(controllerHeaders[leftTriggerIndex][i] != null)
 		        		{
 			        		if((controllerHeaders[leftTriggerIndex][i].getByte() & (byte)0xF0) == (byte)0x10)	// drive packet
-			        			ServerMain.requestPacket(controllerHeaders[leftTriggerIndex][i], (int)(1500 + ((double)controllerValues[leftTriggerIndex][i] * leftTriggerMagnitude)));
+			        			ServerMain.requestPacket(controllerHeaders[leftTriggerIndex][i], (int)(1500 + ((double)controllerValues[leftTriggerIndex][i] * leftTriggerMagnitude)),false);
 			        		else
-			        			ServerMain.requestPacket(controllerHeaders[leftTriggerIndex][i], (int)((double)controllerValues[leftTriggerIndex][i] * leftTriggerMagnitude));
+			        			ServerMain.requestPacket(controllerHeaders[leftTriggerIndex][i], (int)((double)controllerValues[leftTriggerIndex][i] * leftTriggerMagnitude),false);
 		        		}
 		        	}
 		        }
@@ -382,21 +382,21 @@ public class Keyboard implements KeyListener
 		        		if(controllerHeaders[rightTriggerIndex][i] != null)
 		        		{
 			        		if((controllerHeaders[rightTriggerIndex][i].getByte() & (byte)0xF0) == (byte)0x10)	// drive packet
-			        			ServerMain.requestPacket(controllerHeaders[rightTriggerIndex][i], (int)(1500 + ((double)controllerValues[rightTriggerIndex][i] * rightTriggerMagnitude)));
+			        			ServerMain.requestPacket(controllerHeaders[rightTriggerIndex][i], (int)(1500 + ((double)controllerValues[rightTriggerIndex][i] * rightTriggerMagnitude)),false);
 			        		else
-			        			ServerMain.requestPacket(controllerHeaders[rightTriggerIndex][i], (int)((double)controllerValues[rightTriggerIndex][i] * rightTriggerMagnitude));
+			        			ServerMain.requestPacket(controllerHeaders[rightTriggerIndex][i], (int)((double)controllerValues[rightTriggerIndex][i] * rightTriggerMagnitude),false);
 		        		}
 		        	}
 		        }
 		        if(leftThumbPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[leftThumbButtonIndex][i], controllerValues[leftThumbButtonIndex][i]);
+		        		ServerMain.requestPacket(controllerHeaders[leftThumbButtonIndex][i], controllerValues[leftThumbButtonIndex][i],false);
 		        }
 		        if(rightThumbPressed)
 		        {
 		        	for(int i = 0; i < NUMHEADERS; i++)
-		        		ServerMain.requestPacket(controllerHeaders[rightThumbButtonIndex][i], controllerValues[rightThumbButtonIndex][i]);
+		        		ServerMain.requestPacket(controllerHeaders[rightThumbButtonIndex][i], controllerValues[rightThumbButtonIndex][i],false);
 		        }
 		        if(leftThumbMagnitude > 0.0)
 		        {
@@ -405,9 +405,9 @@ public class Keyboard implements KeyListener
 		        		if(leftThumbHeaders[(int)leftThumbDirection][i] != null)
 		        		{
 			        		if((leftThumbHeaders[(int)leftThumbDirection][i].getByte() & (byte)0xF0) == (byte)0x10)	// drive packet
-			        			ServerMain.requestPacket(leftThumbHeaders[(int)leftThumbDirection][i], (int)(1500 + ((double)leftThumbValues[(int)leftThumbDirection][i] * leftThumbMagnitude)));
+			        			ServerMain.requestPacket(leftThumbHeaders[(int)leftThumbDirection][i], (int)(1500 + ((double)leftThumbValues[(int)leftThumbDirection][i] * leftThumbMagnitude)),false);
 			        		else
-			        			ServerMain.requestPacket(leftThumbHeaders[(int)leftThumbDirection][i], (int)((double)leftThumbValues[(int)leftThumbDirection][i] * leftThumbMagnitude));
+			        			ServerMain.requestPacket(leftThumbHeaders[(int)leftThumbDirection][i], (int)((double)leftThumbValues[(int)leftThumbDirection][i] * leftThumbMagnitude),false);
 		        		}
 		        	}
 		        }
@@ -418,15 +418,15 @@ public class Keyboard implements KeyListener
 		        		if(rightThumbHeaders[(int)rightThumbDirection][i] != null)
 		        		{
 			        		if((rightThumbHeaders[(int)rightThumbDirection][i].getByte() & (byte)0xF0) == (byte)0x10)	// drive packet
-			        			ServerMain.requestPacket(rightThumbHeaders[(int)rightThumbDirection][i], (int)(1500 + ((double)rightThumbValues[(int)rightThumbDirection][i] * rightThumbMagnitude)));
+			        			ServerMain.requestPacket(rightThumbHeaders[(int)rightThumbDirection][i], (int)(1500 + ((double)rightThumbValues[(int)rightThumbDirection][i] * rightThumbMagnitude)),false);
 			        		else
-			        			ServerMain.requestPacket(rightThumbHeaders[(int)rightThumbDirection][i], (int)((double)rightThumbValues[(int)rightThumbDirection][i] * rightThumbMagnitude));
+			        			ServerMain.requestPacket(rightThumbHeaders[(int)rightThumbDirection][i], (int)((double)rightThumbValues[(int)rightThumbDirection][i] * rightThumbMagnitude),false);
 		        		}
 		        	}
 		        }
 	        }
 	        else
-	        	ServerMain.requestPacket(HeaderType.driveAll, 1500);
+	        	ServerMain.requestPacket(HeaderType.driveAll, 1500,false);
         }
         anyKeyPressed = false;
     }

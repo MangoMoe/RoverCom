@@ -1,8 +1,15 @@
 package code;
 
+import java.awt.*;
+
+import javax.swing.*;
+
+import java.awt.event.*;
 import java.awt.Canvas;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
 
@@ -23,7 +30,7 @@ public class ServerMain implements Runnable
 	// Threads
 	InputThread input;
 	BroadcastThread output;
-	SerialThread serial;
+	SerialThread serialT;
 	
 	// Logic
 	private static CommonData com;	// must be static for some reason
@@ -33,10 +40,15 @@ public class ServerMain implements Runnable
 	
 	// Structure/required to run
 	private Keyboard keyboard;
-	private Canvas canvas;
-	private JFrame frame;
 	private Thread thread;
 	private boolean running = false;
+	
+	// GUI stuff
+	private Canvas canvas;
+	private JFrame frame;
+	private Container panel;
+	private JLabel testLabel;
+	
 	
 	public static boolean ControllerConnected = false;	// make not static?
 	
@@ -46,6 +58,11 @@ public class ServerMain implements Runnable
     	com = new CommonData();	// initialize common data
     	canvas = new Canvas();
     	frame = new JFrame();
+    	panel = frame.getContentPane();
+    	testLabel = new JLabel("This is a test");
+    	
+    	frame.add(canvas);
+    	//panel.add(testLabel);
     	
     	Scanner reader = new Scanner(System.in);	// initialize some stuff
     	
@@ -90,8 +107,8 @@ public class ServerMain implements Runnable
 			input.start();
 			output = new BroadcastThread(com, address);
 			output.start();
-			serial = new SerialThread(com);
-			serial.start();
+			serialT = new SerialThread(com);
+			serialT.start();
 			
 			// Graphics type threads
 			running = true;
@@ -112,12 +129,12 @@ public class ServerMain implements Runnable
 		
 		input.interrupt();	// interrupt the inputThread to shut it down
     	output.interrupt();
-    	serial.interrupt();
+    	serialT.interrupt();
     	
     	try {
 			input.join();	// wait for other threads to close
 			output.join();
-			serial.join();
+			serialT.join();
 			thread.join();
 		} catch (InterruptedException e) {
 			System.out.println("ServerMain interrupted while attempting to join threads");
@@ -126,7 +143,7 @@ public class ServerMain implements Runnable
     	System.out.println("ServerMain shutting down, goodbye.");
 	}
 	
-    public void run() //WizardBall implements runnable, so when thread started, run method runs
+    public void run() //Application implements runnable, so when thread started, run method runs
     { 
         long lastTime = System.nanoTime(); //uses nanoseconds, more precise than current time in milliseconds
         long timer = System.currentTimeMillis(); //timer variable for fps counter
@@ -171,7 +188,7 @@ public class ServerMain implements Runnable
     	
     	Interface.frame.setResizable(false);//resizing can cause graphics errors, make sure to do first
         Interface.frame.setTitle("Rover Base Station");
-        Interface.frame.add(Interface.canvas);//adds instance of game to the window (can add because subclass of canvas)
+        //Interface.frame.add(Interface.canvas);//adds instance of game to the window (can add because subclass of canvas)
         Interface.frame.pack();//set size of Interface.frame based on component (canvas size)
         Interface.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed
         Interface.frame.setLocationRelativeTo(null);//centers window in middle of screen
@@ -180,11 +197,11 @@ public class ServerMain implements Runnable
     	Interface.start();
     }
     
-    public static synchronized void requestPacket(HeaderType header, int data)	//place to put packet validation logic
+    public static synchronized void requestPacket(HeaderType header, int data, boolean overrideAdditivity)	//place to put packet validation logic
     {
     	if(header != null)
     	{
-	    	header.setCurrentValue(data);	// set new value
+	    	header.setCurrentValue(data,overrideAdditivity);	// set new value
 	    	data = header.getCurrentValue();	// setting value has validation, so get validated value
 	    	
 	    	if(header.equals(HeaderType.driveAll) && data == 1500)	// we are sending a stop packet, turn on brake
@@ -217,10 +234,33 @@ public class ServerMain implements Runnable
     	com.addPacketToSend(buffer.array());
     }*/
     
+    int getValue(byte[] a)	// get int value from byte buffer
+    {
+	    ByteBuffer buffer = ByteBuffer.allocate(2);	// 2 bytes
+    	buffer.put(a, 1, 2);	// read last two bytes from input buffer
+    	buffer.flip();
+    	return (int) buffer.getShort();
+    }
+    
     // input stuffs
     private void update()
     {
     	keyboard.update();
+    	serialT.update();
+    	
+    	// interperet all recieved packets so far
+    	byte[] input = com.popRecievedPacket();
+    	HeaderType header;
+    	while(input != null)
+    	{
+	        header = HeaderType.getHeader(input[0]);
+	        header.setCurrentValue(getValue(input),true);
+	        /*if(header.getPairing() != null)	// set value of logical pairing
+	        {
+	        	header.getPairing().setCurrentValue((int)((double)header.getCurrentValue() * ((double) header.getPairing().getMax() / (double) header.getMax())));
+	        }*/
+	        input = com.popRecievedPacket();
+    	}
     	
     }
     private void render()

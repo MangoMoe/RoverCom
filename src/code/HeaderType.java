@@ -123,9 +123,9 @@ public enum HeaderType {	// enumeration of udp packet header types for easy acce
 		return currentValue;
 	}
 
-	public synchronized void setCurrentValue(int newValue)	// simple validation here, add more?
+	public synchronized void setCurrentValue(int newValue,boolean overrideAdditivity)	// simple validation here, add more?
 	{
-		if(this.isAdditive())
+		if(this.isAdditive() && !overrideAdditivity)
 		{
 			if(newValue + currentValue > MAX_VALUE)
 				currentValue = MAX_VALUE;

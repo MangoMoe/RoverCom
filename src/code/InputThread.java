@@ -9,6 +9,7 @@ public class InputThread extends Thread
 
     protected DatagramSocket socket = null;
     protected CommonData com = null;
+    protected byte[] buf = new byte[256];
 
     public InputThread(CommonData common) throws IOException 
     {
@@ -20,6 +21,7 @@ public class InputThread extends Thread
         super(name);
         com = common;
         socket = new DatagramSocket(PORT);
+        buf = new byte[256];
 
     }
     
@@ -27,7 +29,7 @@ public class InputThread extends Thread
     {
     	try
     	{
-	        byte[] buf = new byte[256];
+	        //byte[] buf = new byte[256];
 	        DatagramPacket packet = new DatagramPacket(buf, buf.length);
 	        
     		while(!Thread.interrupted())	// while we haven't been told to stop

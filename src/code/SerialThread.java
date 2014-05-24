@@ -18,7 +18,7 @@ import java.util.Enumeration;
 
 public class SerialThread extends Thread 
 {
-	SerialTest serial = new SerialTest("3");
+	SerialTest serial = new SerialTest("5");
     protected CommonData com = null;	// concurrency object for data transfer between threads
 
     public SerialThread(CommonData common) throws IOException {
@@ -45,6 +45,20 @@ public class SerialThread extends Thread
             e.printStackTrace();
         }
         serial.close();
+    }
+    
+    public synchronized void update()
+    {
+    	if(serial.recieving)
+    	{
+    		ServerMain.requestPacket(HeaderType.armTurretCommand, serial.turret * 64,true);
+    		ServerMain.requestPacket(HeaderType.armShoulderCommand, serial.shoulder * 64,true);
+    		ServerMain.requestPacket(HeaderType.armElbowCommand, serial.elbow * 64,true);
+    		ServerMain.requestPacket(HeaderType.armWristRotateCommand, serial.wristRotate * 64,true);
+    		ServerMain.requestPacket(HeaderType.armWristFlapCommand, serial.wristPitch * 64,true);
+    		//ServerMain.requestPacket(HeaderType.armGripperCommand, serial.gripper,true);
+    		// don't use gripper input yet
+    	}
     }
 
 }

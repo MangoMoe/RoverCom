@@ -3,19 +3,32 @@ package code;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+
 import java.util.Enumeration;
 
+//DISCLAMER: I pretty much just copied this straight from the web and made a few tweaks for what i want
 public class SerialTest implements SerialPortEventListener {
     SerialPort serialPort;
+    public int turret = 0,
+    		shoulder = 0,
+    		elbow = 0,
+    		wristRotate = 0,
+    		wristPitch = 0,
+    		gripper = 0,
+    		checksum = 0;
+    public boolean recieving = false;
+	
 
     private static final String PORT_NAMES[] = {
             "/dev/tty.usbserial-A9007UX1", // Mac OS X
             "/dev/ttyUSB0", // Linux
-            "COM3", // Windows
+            "COM5", // Windows
     };
 
     private BufferedReader input;
@@ -98,12 +111,37 @@ public class SerialTest implements SerialPortEventListener {
         }
     }
 
-    public synchronized void read(String data){
-        try{
-            System.out.println(data);
+    public synchronized void read(String data)
+    {
+        try
+        {
+        	//System.out.println(data);
+        	String[] datums = data.split(",");
+        	
+        	if(datums[0].equals("$PUPRPT"))
+        	{
+	        	turret = Integer.parseInt(datums[1]);
+	        	shoulder = Integer.parseInt(datums[2]);
+	        	elbow = Integer.parseInt(datums[3]);
+	        	wristRotate = Integer.parseInt(datums[4]);
+	        	wristPitch = Integer.parseInt(datums[5]);
+	        	gripper = Integer.parseInt(datums[6]);
+	        	checksum = Integer.parseInt(datums[7].replace("*", ""));	// get checksum, don't include star at end
+	        	
+	        	//System.out.println((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper) + "  :  " + checksum);
+	        	//System.out.println((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper) == checksum);
+	        	if((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper) == checksum)
+	        		recieving = true;	// lastly, say that we are recieving
+	        	else
+	        		recieving = false;
+        	}
+        	else
+        		recieving = false;
+        	
         }
         catch (Exception e) {
-            System.err.println(e.toString());
+            e.printStackTrace();
+            recieving = false;
         }
     }
 }
