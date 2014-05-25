@@ -21,6 +21,7 @@ public class SerialTest implements SerialPortEventListener {
     		wristRotate = 0,
     		wristPitch = 0,
     		gripper = 0,
+    		toggleSwitch = 0,
     		checksum = 0;
     public boolean recieving = false;
 	
@@ -115,7 +116,7 @@ public class SerialTest implements SerialPortEventListener {
     {
         try
         {
-        	//System.out.println(data);
+        	System.out.println(data);
         	String[] datums = data.split(",");
         	
         	if(datums[0].equals("$PUPRPT"))
@@ -126,11 +127,12 @@ public class SerialTest implements SerialPortEventListener {
 	        	wristRotate = Integer.parseInt(datums[4]);
 	        	wristPitch = Integer.parseInt(datums[5]);
 	        	gripper = Integer.parseInt(datums[6]);
-	        	checksum = Integer.parseInt(datums[7].replace("*", ""));	// get checksum, don't include star at end
+	        	toggleSwitch = Integer.parseInt(datums[7]);
+	        	checksum = Integer.parseInt(datums[8].replace("*", ""));	// get checksum, don't include star at end
 	        	
 	        	//System.out.println((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper) + "  :  " + checksum);
 	        	//System.out.println((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper) == checksum);
-	        	if((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper) == checksum)
+	        	if((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper ^ toggleSwitch) == checksum)
 	        		recieving = true;	// lastly, say that we are recieving
 	        	else
 	        		recieving = false;
