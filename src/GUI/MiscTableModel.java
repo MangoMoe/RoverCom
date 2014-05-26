@@ -16,9 +16,11 @@ public class MiscTableModel extends AbstractTableModel {
 		
 		cellData[1][0] = "All Wheels";
 		cellData[2][0] = "Left Wheels";
-		cellData[3][0] = "RightWheels";
+		cellData[3][0] = "Right Wheels";
 		cellData[4][0] = "Gimbal Yaw";
 		cellData[5][0] = "Gimbal Pitch";
+		cellData[6][0] = "Current Camera";
+		cellData[7][0] = "BOOOOST!";
 	}
 	
 	@Override

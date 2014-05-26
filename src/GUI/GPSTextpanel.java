@@ -26,9 +26,9 @@ public class GPSTextpanel extends JPanel {
 		addButton.setText("ADD WAYPOINT");
 		
 		this.add(currentPositionTextBox);
-		this.add(clearButton);
+		/*this.add(clearButton);
 		this.add(inputPositionTextBox);
-		this.add(addButton);
+		this.add(addButton);*/
 	}
 	
 	public void setCurrentPositionText(String position){

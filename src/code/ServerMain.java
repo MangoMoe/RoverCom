@@ -154,7 +154,7 @@ public class ServerMain implements Runnable
             
             brake = false;	// reset brake every second
             
-            //render(); //unlimited updating, called as many times as possible
+            render(); //unlimited updating, called as many times as possible
 //unlimited rendering???
             frames++; //increment number of frames per second
             
@@ -175,7 +175,7 @@ public class ServerMain implements Runnable
     {
     	// instantiate new instance of this class
     	ServerMain Interface = new ServerMain();	// come up with better name?
-    	Interface.GUIFrame.setResizable(false);//resizing can cause graphics errors, make sure to do first
+    	//Interface.GUIFrame.setResizable(false);//resizing can cause graphics errors, make sure to do first
         Interface.GUIFrame.setTitle("Rover Base Station");
         Interface.GUIFrame.pack();//set size of Interface.frame based on component (canvas size)
         Interface.GUIFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed
@@ -196,7 +196,9 @@ public class ServerMain implements Runnable
 	    		brake = true;
 	    	
 	    	if(!(brake && (header.getByte() & (byte)0xF0) == (byte)0x10 && data != 1500))	// if we're braking don't send packets to move wheels
+	    	{
 		    	createPacket(header, data);
+	    	}
     	}
     }
     
@@ -253,7 +255,7 @@ public class ServerMain implements Runnable
     }
     private void render()
     {
-    	
+    	GUIFrame.updateDisplay();
     }
     
 }

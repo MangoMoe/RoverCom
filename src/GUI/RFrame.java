@@ -1,13 +1,16 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
+import code.HeaderType;
+
 public class RFrame extends JFrame {
 	private static final int DEFAULT_WIDTH = 200;
-	private static final int DEFAULT_HEIGHT = 1200; 
+	private static final int DEFAULT_HEIGHT = 800; 
 	TopBar topBanana;
 	WestPanel westBanana;
 	EastPanel eastBanana;
@@ -51,6 +54,27 @@ public class RFrame extends JFrame {
 		super.addKeyListener(key);
 	}
 	
+	public void updateDisplay()
+	{
+		for(HeaderType header : HeaderType.values())
+		{
+			switch(header.getByte() & (byte)0xF0)
+			{
+				case (byte)0x50:	// battery packet
+					if ((header.getByte() & (byte)0x0F) > 0)	// not boost packet (invalid index to pass in
+						topBanana.voltagePanel.setVoltageMeterText((int)(header.getByte() & (byte)0x0F) - 1, header.getCurrentValue());
+					else	// must be a boost packet
+						eastBanana.setValue(header);
+					break;
+				case (byte)0x20:	// arm packet
+					westBanana.setValue(header);
+					break;
+				default:	// other header
+					eastBanana.setValue(header);
+					break;
+			}
+		}
+	}
 	/*public static void main(String[] args){
 		JFrame frame = new RFrame();
 		frame.setVisible(true);

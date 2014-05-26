@@ -2,8 +2,10 @@ package GUI;
 
 import javax.swing.table.AbstractTableModel;
 
+import code.HeaderType;
+
 public class ArmTableModel extends AbstractTableModel {
-	private static final int NUM_COLUMNS =  3;
+	private static final int NUM_COLUMNS =  2;
 	private static final int NUM_ROWS    =  8;
 	private String[][] cellData;
 	
@@ -12,15 +14,15 @@ public class ArmTableModel extends AbstractTableModel {
 		
 		cellData[0][0] = "OCTAN";
 		cellData[0][1] = "SENDING";
-		cellData[0][2] = "RECEIVING";
+		//cellData[0][2] = "RECEIVING";
 		
 		cellData[1][0] = "Base Rot";
 		cellData[2][0] = "Shoulder";
-		cellData[3][0] = "ElbowPos";
-		cellData[4][0] = "WristRot";
-		cellData[5][0] = "WristFlap";
-		cellData[6][0] = "Claw Pos";
-		cellData[7][0] = "ClawWheels";
+		cellData[3][0] = "Elbow Position";
+		cellData[4][0] = "Wrist Flap";
+		cellData[5][0] = "Wrist Rotation";
+		cellData[6][0] = "Claw Value";
+		cellData[7][0] = "Rotator/auger";
 	}
 	
 	@Override

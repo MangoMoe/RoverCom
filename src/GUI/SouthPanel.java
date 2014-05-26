@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.Color;
 import java.awt.event.KeyListener;
 
 import javax.swing.JPanel;
@@ -13,6 +14,8 @@ public class SouthPanel extends JPanel {
 		console.setEditable(false);
 		
 		this.add(console);
+		
+		//this.setBackground(new Color(0,61,245));
 	}
 	
 	@Override

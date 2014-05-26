@@ -1,4 +1,5 @@
 package GUI;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.event.KeyListener;
@@ -19,6 +20,7 @@ public class VoltagePanel extends Panel {
 			voltageMeters.get(i).setTextFieldEditable(false);
 			this.add(voltageMeters.get(i));
 		}
+		//this.setBackground(new Color(0,61,245));
 	}
 	
 	public void setVoltageMeterText(int index, int voltageLevel){

@@ -1,4 +1,5 @@
 package GUI;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -15,9 +16,10 @@ public class TopBar extends JPanel {
 		voltagePanel = new VoltagePanel();
 		this.add(voltagePanel);
 		
-		/*gpsTextPanel = new GPSTextpanel();
-		this.add(gpsTextPanel);*/
+		gpsTextPanel = new GPSTextpanel();
+		this.add(gpsTextPanel);
 				
+		//this.setBackground(new Color(0,61,245));
 	}
 	
 	@Override
