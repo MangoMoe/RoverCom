@@ -36,6 +36,7 @@ public class ServerMain implements Runnable
 	// Logic
 	private static CommonData com;	// must be static for some reason
 	private XboxController xc;
+	private XboxControllerHandler handler;
 	
 	private static boolean brake = false;	// figure out how to make this non-static
 	
@@ -61,7 +62,7 @@ public class ServerMain implements Runnable
     	System.out.println("Enter name (ex HAL1) or ip address of host to broadcast to: ");
 		address = reader.nextLine();
 		reader.close();
-    	
+		
     	xc = new XboxController();
     	if (!xc.isConnected())	// if xbox controller not connected tell error
         {
@@ -79,9 +80,10 @@ public class ServerMain implements Runnable
     				"Startup Information",
     				JOptionPane.WARNING_MESSAGE);
     		ControllerConnected = true;
-    		xc.addXboxControllerListener(Keyboard.initializeAdapter(xc));	// initialize input
+    		xc.addXboxControllerListener(XboxControllerHandler.initializeAdapter(xc));	// initialize input
     	}
-
+    	
+    	handler = new XboxControllerHandler();
     	keyboard = new Keyboard(ControllerConnected);
     	GUIFrame.addKeyListener(keyboard);
     	//GUIFrame.addKeyListener(keyboard);	// add listener to take keyboard input (this overridden method adds the listener to all components of the GUIFrame)
@@ -236,6 +238,7 @@ public class ServerMain implements Runnable
     private void update()
     {
     	keyboard.update();
+    	handler.update(keyboard.getDisableController(),keyboard.getUpdateStatus());
     	serialT.update();
     	
     	// interperet all recieved packets so far

@@ -16,7 +16,7 @@ public class ArmTableModel extends AbstractTableModel {
 		cellData[0][1] = "SENDING";
 		//cellData[0][2] = "RECEIVING";
 		
-		cellData[1][0] = "Base Rot";
+		cellData[1][0] = "Turret Rotation";
 		cellData[2][0] = "Shoulder";
 		cellData[3][0] = "Elbow Position";
 		cellData[4][0] = "Wrist Flap";

@@ -15,7 +15,7 @@ import java.util.Enumeration;
 //DISCLAMER: I pretty much just copied this straight from the web and made a few tweaks for what i want
 public class SerialTest implements SerialPortEventListener {
     SerialPort serialPort;
-    public int turret = 0,
+    int turret = 0,
     		shoulder = 0,
     		elbow = 0,
     		wristRotate = 0,
@@ -132,7 +132,7 @@ public class SerialTest implements SerialPortEventListener {
 	        	
 	        	//System.out.println((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper) + "  :  " + checksum);
 	        	//System.out.println((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper) == checksum);
-	        	if((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper ^ toggleSwitch) == checksum)
+	        	if((turret ^ shoulder ^ elbow ^ wristRotate ^ wristPitch ^ gripper /*^ toggleSwitch*/) == checksum)
 	        		recieving = true;	// lastly, say that we are recieving
 	        	else
 	        		recieving = false;

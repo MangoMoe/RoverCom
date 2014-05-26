@@ -41,10 +41,10 @@ public class RealTimeMap extends JComponent {
 	    	canvas.setBackground(new Color(5,255,255));
 			
 			canvas.setMinimumSize(new Dimension(size));
-			image = ImageIO.read(new File(imPath));
+			//image = ImageIO.read(new File(imPath));
 			rover = new DrawingRectangle(new Rectangle2D.Double(0, 0, 5, 5),ROVER);
 			waypoints = new ArrayList<DrawingShape>();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.out.println("D:");
 			e.printStackTrace();
 		}

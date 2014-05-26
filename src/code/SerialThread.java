@@ -51,12 +51,17 @@ public class SerialThread extends Thread
     {
     	if(serial.recieving)
     	{
-    		ServerMain.requestPacket(HeaderType.armTurretCommand, serial.turret * 64,true);
-    		ServerMain.requestPacket(HeaderType.armShoulderCommand, serial.shoulder * 64,true);
-    		ServerMain.requestPacket(HeaderType.armElbowCommand, serial.elbow * 64,true);
-    		ServerMain.requestPacket(HeaderType.armWristRotateCommand, serial.wristRotate * 64,true);
-    		ServerMain.requestPacket(HeaderType.armWristFlapCommand, serial.wristPitch * 64,true);
-    		//ServerMain.requestPacket(HeaderType.armGripperCommand, serial.gripper,true);
+    		ServerMain.requestPacket(HeaderType.armTurretCommand, (int)((double)(serial.turret - 75) * (65536.0 / (950.0 - 75.0))) ,true);
+    		ServerMain.requestPacket(HeaderType.armShoulderCommand, (int)((double)(serial.shoulder - 465) * (65536.0 / (830.0 - 465.0))),true);
+    		ServerMain.requestPacket(HeaderType.armElbowCommand, (int)((double)(serial.elbow - 160) * (65536.0 / (860.0 - 160.0))),true);
+    		ServerMain.requestPacket(HeaderType.armWristRotateCommand, (int)((double)(serial.wristRotate - 200) * (65536.0 / (820.0 - 200.0))),true);
+    		ServerMain.requestPacket(HeaderType.armWristFlapCommand, (int)((double)(serial.wristPitch - 200) * (65536.0 / (820.0 - 200.0))),true);
+    		if(serial.gripper < 100)	// close gripper
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 1, true);
+    		else if (serial.gripper > 700)	// open gripper
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 2, true);
+    		else	// gripper neutral
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 0,true);
     		// don't use gripper input yet
     	}
     }
