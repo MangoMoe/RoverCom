@@ -13,25 +13,25 @@ public enum HeaderType {	// enumeration of udp packet header types for easy acce
 	
 	// arm header types
 	armTurretCommand(0,65535,2,(byte)0x20,true,null), armShoulderCommand(0,65535,2,(byte)0x21,true,null), armElbowCommand(0,65535,2,(byte)0x22,true,null), 
-	armWristFlapCommand(0,65535,2,(byte)0x23,true,null), armWristRotateCommand(0,65535,2,(byte)0x24,true,null), armGripperCommand(-128,127,1,(byte)0x25,false,null),
-	armRotatorCommand(-128,127,1,(byte)0x26,false,null), armShoulderFeedback(0,4095,2,(byte)0x27,false,HeaderType.armShoulderCommand), armShoulderCurrent(0,255,1,(byte)0x28,false,null),
+	armWristFlapCommand(0,65535,2,(byte)0x23,true,null), armWristRotateCommand(0,65535,2,(byte)0x24,true,null), armGripperCommand(0,2,1,(byte)0x25,false,null),
+	armRotatorCommand(0,2,1,(byte)0x26,false,null), armShoulderFeedback(0,4095,2,(byte)0x27,false,HeaderType.armShoulderCommand), armShoulderCurrent(0,255,1,(byte)0x28,false,null),
 	armElbowFeedback(0,4095,2,(byte)0x29,false,HeaderType.armElbowCommand), armElbowCurrent(0,255,1,(byte)0x2A,false,null), armWristFlapFeedback(0,65535,2,(byte)0x2B,false,HeaderType.armWristFlapCommand),
 	armWristRotateFeedback(0,65535,2,(byte)0x2C,false,HeaderType.armWristRotateCommand), armGripperCurrent(0,255,1,(byte)0x2D,false,HeaderType.armGripperCommand),
 	
 	// gimbal header types
-	gimbal((byte)0x30),
+	gimbalYaw(1000,2000,2,(byte)0x30,true,null), gimbalPitch(1000,2000,2,(byte)0x31,true,null),
 	
 	// camera header types
-	camera((byte)0x40),
+	camera(1,6,2,(byte)0x40,false,null),
 	
 	// battery header types
-	battery((byte)0x50),
+	boost(0,1,2,(byte)0x50,false,null),battery1(0,2048,2,(byte)0x51,false,null),battery2(0,2048,2,(byte)0x52,false,null),battery3(0,2048,2,(byte)0x53,false,null),battery4(0,2048,2,(byte)0x54,false,null),battery5(0,2048,2,(byte)0x55,false,null),battery6(0,2048,2,(byte)0x56,false,null),battery7(0,2048,2,(byte)0x57,false,null),battery8(0,2048,2,(byte)0x58,false,null);
 	
 	// imu header types
-	imu((byte)0x60),
+	//imu((byte)0x60),
 	
 	// misc header types
-	misc((byte)0x70);
+	//misc((byte)0x70);
 	
 	private final int MIN_VALUE;
 	private final int MAX_VALUE;

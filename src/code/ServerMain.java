@@ -83,7 +83,8 @@ public class ServerMain implements Runnable
     	}
 
     	keyboard = new Keyboard(ControllerConnected);
-    	GUIFrame.addKeyListener(keyboard);	// add listener to take keyboard input
+    	GUIFrame.addKeyListener(keyboard);
+    	//GUIFrame.addKeyListener(keyboard);	// add listener to take keyboard input (this overridden method adds the listener to all components of the GUIFrame)
 		
 	}
 	
@@ -174,10 +175,10 @@ public class ServerMain implements Runnable
     {
     	// instantiate new instance of this class
     	ServerMain Interface = new ServerMain();	// come up with better name?
-    	/*Interface.GUIFrame.setResizable(false);//resizing can cause graphics errors, make sure to do first
+    	Interface.GUIFrame.setResizable(false);//resizing can cause graphics errors, make sure to do first
         Interface.GUIFrame.setTitle("Rover Base Station");
         Interface.GUIFrame.pack();//set size of Interface.frame based on component (canvas size)
-        Interface.GUIFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed*/
+        Interface.GUIFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed
     	Interface.GUIFrame.setLocationRelativeTo(null);//centers window in middle of screen
         Interface.GUIFrame.setVisible(true);//makes sure window can be seen
     	

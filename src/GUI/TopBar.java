@@ -1,5 +1,6 @@
 package GUI;
 import java.awt.GridLayout;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -14,8 +15,15 @@ public class TopBar extends JPanel {
 		voltagePanel = new VoltagePanel();
 		this.add(voltagePanel);
 		
-		gpsTextPanel = new GPSTextpanel();
-		this.add(gpsTextPanel);
+		/*gpsTextPanel = new GPSTextpanel();
+		this.add(gpsTextPanel);*/
 				
+	}
+	
+	@Override
+	public void addKeyListener(KeyListener key)
+	{
+		voltagePanel.addKeyListener(key);
+		super.addKeyListener(key);
 	}
 }

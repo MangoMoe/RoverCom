@@ -1,5 +1,6 @@
 package GUI;
 import java.awt.GridLayout;
+import java.awt.event.KeyListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,5 +32,13 @@ public class JLabelAndJTextField extends JPanel {
 	
 	public void setTextFieldEditable(boolean b){
 		textField.setEditable(b);
+	}
+	
+	@Override
+	public void addKeyListener(KeyListener key)
+	{
+		label.addKeyListener(key);
+		textField.addKeyListener(key);
+		super.addKeyListener(key);
 	}
 }
