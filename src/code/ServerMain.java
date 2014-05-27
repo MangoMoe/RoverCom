@@ -15,6 +15,7 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities.*;
 
 import GUI.RFrame;
 import ch.aplu.xboxcontroller.XboxController;
@@ -31,12 +32,13 @@ public class ServerMain implements Runnable
 	// Threads
 	InputThread input;
 	BroadcastThread output;
-	SerialThread serialT;
+	//SerialThread serialT;
 	
 	// Logic
 	private static CommonData com;	// must be static for some reason
 	private XboxController xc;
 	private XboxControllerHandler handler;
+	private SerialTest serial;
 	
 	private static boolean brake = false;	// figure out how to make this non-static
 	
@@ -44,6 +46,7 @@ public class ServerMain implements Runnable
 	private Keyboard keyboard;
 	private Thread thread;
 	private boolean running = false;
+	private static HeaderTypeAccessor accessor = new HeaderTypeAccessor();
 	
 	// GUI stuff
 	private RFrame GUIFrame;
@@ -55,7 +58,6 @@ public class ServerMain implements Runnable
 	{
 		// setup
     	com = new CommonData();	// initialize common data
-    	GUIFrame = new RFrame();
     	
     	Scanner reader = new Scanner(System.in);	// initialize some stuff
     	
@@ -82,10 +84,18 @@ public class ServerMain implements Runnable
     		ControllerConnected = true;
     		xc.addXboxControllerListener(XboxControllerHandler.initializeAdapter(xc));	// initialize input
     	}
-    	
-    	handler = new XboxControllerHandler();
     	keyboard = new Keyboard(ControllerConnected);
-    	GUIFrame.addKeyListener(keyboard);
+    	handler = new XboxControllerHandler(this);
+    	
+    	accessor = new HeaderTypeAccessor();
+    	SwingUtilities.invokeLater(new Runnable(){
+    		@Override
+    		public void run(){
+    			GUIFrame = new RFrame(accessor);
+    			
+    			GUIFrame.addKeyListener(keyboard);
+    		}
+    	});
     	//GUIFrame.addKeyListener(keyboard);	// add listener to take keyboard input (this overridden method adds the listener to all components of the GUIFrame)
 		
 	}
@@ -99,8 +109,8 @@ public class ServerMain implements Runnable
 			input.start();
 			output = new BroadcastThread(com, address);
 			output.start();
-			serialT = new SerialThread(com);
-			serialT.start();
+			//serialT = new SerialThread(com);
+			//serialT.start();
 			
 			// Graphics type threads
 			running = true;
@@ -113,20 +123,36 @@ public class ServerMain implements Runnable
 		}
 	}
 	
+	public void startSerial()
+	{
+
+    	serial = new SerialTest("6");
+	}
+	
+	public void stopSerial()
+	{
+		serial.close();
+		serial = null;
+		System.out.println("Serial Comms Stopped");
+	}
+	
 	public synchronized void stop()
 	{
 		running = false;
 		
 		xc.release();	// release xbox controller (part of cleanup)
 		
+		if(serial != null)
+			serial.close();	// close serial input
+		
 		input.interrupt();	// interrupt the inputThread to shut it down
     	output.interrupt();
-    	serialT.interrupt();
+    	//serialT.interrupt();
     	
     	try {
 			input.join();	// wait for other threads to close
 			output.join();
-			serialT.join();
+			//serialT.join();
 			thread.join();
 		} catch (InterruptedException e) {
 			System.out.println("ServerMain interrupted while attempting to join threads");
@@ -156,7 +182,7 @@ public class ServerMain implements Runnable
             
             brake = false;	// reset brake every second
             
-            render(); //unlimited updating, called as many times as possible
+           // render(); //unlimited updating, called as many times as possible
 //unlimited rendering???
             frames++; //increment number of frames per second
             
@@ -165,7 +191,7 @@ public class ServerMain implements Runnable
             {
                 timer += 1000;//reset timer
                 //System.out.println(updates + " ups, " + frames + " fps");//display fps and updates per second
-                GUIFrame.setTitle("Rover Time!" + "    |   " + updates + " ups, " + frames + " fps");//display title of program and fps counter
+                //GUIFrame.setTitle("Rover Time!" + "    |   " + updates + " ups, " + frames + " fps");//display title of program and fps counter
                 frames = 0;
                 updates = 0;
             }
@@ -177,12 +203,7 @@ public class ServerMain implements Runnable
     {
     	// instantiate new instance of this class
     	ServerMain Interface = new ServerMain();	// come up with better name?
-    	//Interface.GUIFrame.setResizable(false);//resizing can cause graphics errors, make sure to do first
-        Interface.GUIFrame.setTitle("Rover Base Station");
-        Interface.GUIFrame.pack();//set size of Interface.frame based on component (canvas size)
-        Interface.GUIFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//makes sure program shuts down when window closed
-    	Interface.GUIFrame.setLocationRelativeTo(null);//centers window in middle of screen
-        Interface.GUIFrame.setVisible(true);//makes sure window can be seen
+    	
     	
     	Interface.start();
     }
@@ -191,7 +212,8 @@ public class ServerMain implements Runnable
     {
     	if(header != null)
     	{
-	    	header.setCurrentValue(data,overrideAdditivity);	// set new value
+    		accessor.setData(header,data,overrideAdditivity);
+	    	//header.setCurrentValue(data,overrideAdditivity);	// set new value
 	    	data = header.getCurrentValue();	// setting value has validation, so get validated value
 	    	
 	    	if(header.equals(HeaderType.driveAll) && data == 1500)	// we are sending a stop packet, turn on brake
@@ -239,7 +261,33 @@ public class ServerMain implements Runnable
     {
     	keyboard.update();
     	handler.update(keyboard.getDisableController(),keyboard.getUpdateStatus());
-    	serialT.update();
+    	//serialT.update();
+    	// serial update
+    	
+    	if(keyboard.getSerialStop() && !keyboard.getSerialStart() && serial != null)
+    	{
+    		stopSerial();
+    	}
+    	else if(keyboard.getSerialStart() && !keyboard.getSerialStop() && serial == null)
+    	{
+    		startSerial();
+    	}
+    	
+    	if(serial != null && serial.recieving)
+    	{
+    		ServerMain.requestPacket(HeaderType.armTurretCommand, (int)((double)(serial.turret - 75) * (65536.0 / (950.0 - 75.0))) ,true);
+    		ServerMain.requestPacket(HeaderType.armShoulderCommand, (int)((double)(serial.shoulder - 465) * (65536.0 / (830.0 - 465.0))),true);
+    		ServerMain.requestPacket(HeaderType.armElbowCommand, (int)((double)(serial.elbow - 160) * (65536.0 / (860.0 - 160.0))),true);
+    		ServerMain.requestPacket(HeaderType.armWristRotateCommand, (int)((double)(serial.wristRotate - 200) * (65536.0 / (820.0 - 200.0))),true);
+    		ServerMain.requestPacket(HeaderType.armWristFlapCommand, (int)((double)(serial.wristPitch - 200) * (65536.0 / (820.0 - 200.0))),true);
+    		if(serial.gripper < 100)	// close gripper
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 1, true);
+    		else if (serial.gripper > 700)	// open gripper
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 2, true);
+    		else	// gripper neutral
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 0,true);
+    		// don't use gripper input yet
+    	}
     	
     	// interperet all recieved packets so far
     	byte[] input = com.popRecievedPacket();
@@ -258,7 +306,12 @@ public class ServerMain implements Runnable
     }
     private void render()
     {
-    	GUIFrame.updateDisplay();
+    	/*SwingUtilities.invokeLater(new Runnable(){
+    		@Override
+    		public void run(){
+    			GUIFrame.updateDisplay();
+    		}
+    	});*/
     }
     
 }

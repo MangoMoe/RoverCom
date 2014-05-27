@@ -1,0 +1,22 @@
+-----------------------Setup things (should already be done on the laptop)--------------------------------
+
+1) put the .dll files in the C:/Windows folder (or perhaps in the java installation's jre.x.x/bin folder, I haven't tried this yet though)
+2) plug in your xbox controller to install the driver for it.
+3) make sure the visual c++ redistributable from the XboxController folder is installed
+4) install the arduino software (especially the driver for the usb com port)
+5) Configure or create the PATH environment variable to point to the Java jre.x.x/bin folder
+
+-----------------------Running the program---------------------------------------
+
+1) Open up command prompt (hit Windows+R and type "cmd" and hit enter)
+2) Navigate to the folder with the executable (type "cd path/to/the/right/folder" and hit enter, type "dir" and hit enter to see the contents of the folder)
+3) Set up your control mappings using the controllerMappings and keyMappings files. the roverCommandNames and keycodes files will help
+	These can also be updated at any time while running the program. Simply save your changes to the file and press f2.
+4) Type "java -jar nameOfExecutable.jar" and hit enter (make sure the xbox controller and the puppet are plugged in if you want to use them)
+5) There will be a prompt for an ip address or host name. Enter the ip address of the master control board (It should be 192.168.10.193) and hit enter
+6) A window will come up giving you information about the controller and some additional instructions. press ok.
+7) The user interface should come up. make sure you click on it to give it focus. Now you should be able to start controlling the rover. use the escape and f1 keys to switch between keyboard and xbox controller input
+	The interface should show you what values you are sending for each command and give information about voltage and gps coordinates (I hope :))
+8) When you are done, simply click the x on the window to quit
+
+EXTERMINATE! EXTERMINATE!	~hal

@@ -103,20 +103,20 @@ public class SerialTest implements SerialPortEventListener {
         System.out.println("Serial Comms Started");
     }
 
-    public synchronized void send(int b){
+    /*public synchronized void send(int b){
         try{
             output.write(b);
         }
         catch (Exception e) {
             System.err.println(e.toString());
         }
-    }
+    }*/
 
     public synchronized void read(String data)
     {
         try
         {
-        	System.out.println(data);
+        	//System.out.println(data);
         	String[] datums = data.split(",");
         	
         	if(datums[0].equals("$PUPRPT"))

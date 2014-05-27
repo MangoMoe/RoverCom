@@ -8,6 +8,8 @@ import ch.aplu.xboxcontroller.XboxControllerAdapter;
 
 public class XboxControllerHandler {
 	
+	private static ServerMain parent;	// so we can call a certain function from it, maybe not the best solution, but all i have for now
+	
 	private static final int NUMHEADERS = 5;	// maximum number of headers per key
 
     // XboxController things
@@ -58,8 +60,9 @@ public class XboxControllerHandler {
     int[][] leftThumbValues = new int[360][NUMHEADERS];
     int[][] rightThumbValues = new int[360][NUMHEADERS];
     
-    public XboxControllerHandler()
+    public XboxControllerHandler(ServerMain parentObject)
     {
+    	parent = parentObject;
     	updateControllerMappings();
     }
     
@@ -347,6 +350,12 @@ public class XboxControllerHandler {
     		public void buttonY(boolean pressed)
     		{
     			buttonYPressed = pressed;
+    		}
+    		
+    		public void back(boolean pressed)
+    		{
+    			if (pressed)
+    				parent.startSerial();
     		}
     		
     		public void start(boolean pressed)

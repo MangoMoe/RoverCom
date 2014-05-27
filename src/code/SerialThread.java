@@ -18,7 +18,7 @@ import java.util.Enumeration;
 
 public class SerialThread extends Thread 
 {
-	SerialTest serial = new SerialTest("5");
+	SerialTest serial = new SerialTest("6");
     protected CommonData com = null;	// concurrency object for data transfer between threads
 
     public SerialThread(CommonData common) throws IOException {

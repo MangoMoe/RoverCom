@@ -1,5 +1,7 @@
 package code;
 
+import java.beans.PropertyChangeSupport;
+
 public enum HeaderType {	// enumeration of udp packet header types for easy access and error prevention
 // add data type/size required to here???
 	

@@ -23,6 +23,8 @@ public class Keyboard implements KeyListener
     
     private boolean disableController = false;
     private boolean updateMappings = false;
+    private boolean stopSerialComms = false;
+    private boolean startSerialComms = false;
     
     public boolean up, down, left, right;
     public Keyboard(boolean controllerConnected)	// keyboard object kind of houses XboxController stuff too
@@ -86,22 +88,31 @@ public class Keyboard implements KeyListener
     
     public void update() //checks every cycle if key is pressed or released
     {
-    	if(keys[27])
+    	if(keys[27])	// escape activates keyboard
     	{
 			disableController = true;
 			System.out.println("Keyboard active.");
     	}
-    	else if(keys[112])
+    	else if(keys[112])	// f1 activates controller
     	{
 			disableController = false;
 			System.out.println("Controller active");
     	}
-    	else if(keys[113])
+    	else if(keys[113])	// f2 updates input mappings
     	{
 			updateKeyMappings();
 			updateMappings = true;
 			System.out.println("updating input mappings");
     	}
+    	if(keys[122])	// f11 starts serial communications
+    		startSerialComms = true;
+    	else
+    		startSerialComms = false;
+    	
+    	if(keys[123])	// f12 stops serial communications
+    		stopSerialComms = true;
+    	else
+    		stopSerialComms = false;
     	
     	if(disableController)	// only do key stuff if not using controller
     	{
@@ -170,5 +181,13 @@ public class Keyboard implements KeyListener
     	else
     		return false;
     	
+    }
+    public boolean getSerialStart()
+    {
+    	return startSerialComms;
+    }
+    public boolean getSerialStop()
+    {
+    	return stopSerialComms;
     }
 }

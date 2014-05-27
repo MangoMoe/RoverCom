@@ -1,0 +1,28 @@
+these are the names of the commands you will have to put in the keyMappings.txt and controllerMappings.txt to change the control configurations
+
+Name			Min	Max	Additivity*	Notes
+//drive commands
+driveAll		1000	2000	false		1500 is stop, 1000 is full reverse, 2000 is full forward.
+driveLeft		1000	2000	false		In the controller mappings, all drive values mapped to the joysticks are added to 1500 (so put 250 if you want to send 1750 when the stick is pushed all the way out)
+driveRight		1000	2000	false
+
+//arm commands
+armTurretCommand	0	65535	true		For these arm commands, 0 is fully rotated one direction, 65535 is fully the other direction, half way in between should be half way.
+armShoulderCommand	0	65535	true		the puppet is already configured to send all these values, including the gripper command via the dial on the puppet (but not the rotator).
+armElbowCommand		0	65535	true 
+armWristFlapCommand	0	65535	true
+armWristRotateCommand	0	65535	true
+armGripperCommand	0	2	false		0 is neutral, 1 is close gripper, 2 is open gripper
+armRotatorCommand	0	2	false		0 is neutral, 1 is clockwise?, 2 is counterclockwise?
+
+//gimbal commands
+gimbalYaw		1000	2000	true		For gimbal commands: 1000 is fully left?, 2000 is fully right?, 1500 is straight ahead
+gimbalPitch		1000	2000	true
+
+//camera commands
+camera			1	6	false		send a number 1-6 to switch to that camera
+
+//battery commands
+boost			0	1	false		1 is on, 0 is off
+
+*This means whether or not the number mapped to the control is added to the current value of the attribute (true), like an arm angle or set as the value (false), such as a drive speed
