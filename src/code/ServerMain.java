@@ -41,6 +41,7 @@ public class ServerMain implements Runnable
 	private SerialTest serial;
 	
 	private static boolean brake = false;	// figure out how to make this non-static
+	String comPort;
 	
 	// Structure/required to run
 	private Keyboard keyboard;
@@ -63,6 +64,9 @@ public class ServerMain implements Runnable
     	
     	System.out.println("Enter name (ex HAL1) or ip address of host to broadcast to: ");
 		address = reader.nextLine();
+		System.out.println("Enter Com Port Number (should probably be 5): ");
+		comPort = reader.nextLine();
+		
 		reader.close();
 		
     	xc = new XboxController();
@@ -126,7 +130,7 @@ public class ServerMain implements Runnable
 	public void startSerial()
 	{
 
-    	serial = new SerialTest("6");
+    	serial = new SerialTest(comPort);
 	}
 	
 	public void stopSerial()
