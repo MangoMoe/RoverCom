@@ -116,7 +116,7 @@ public class SerialTest implements SerialPortEventListener {
     {
         try
         {
-        	//System.out.println(data);
+        	/*System.out.println(data);*/
         	String[] datums = data.split(",");
         	
         	if(datums[0].equals("$PUPRPT"))
