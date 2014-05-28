@@ -18,25 +18,34 @@ import java.util.Enumeration;
 
 public class SerialThread extends Thread 
 {
-	SerialTest serial = new SerialTest("6");
+	BroadcastSerial broadcast;
     protected CommonData com = null;	// concurrency object for data transfer between threads
+    private String comPort;
 
-    public SerialThread(CommonData common) throws IOException {
-    	this("Puppet Serial Input Thread", common);
+    public SerialThread(CommonData common, String comPort) throws IOException {
+    	this("Puppet Serial Input Thread", common,comPort);
     }
     
-    public SerialThread(String name, CommonData common) throws IOException {
+    public SerialThread(String name, CommonData common, String comPort) throws IOException {
         super(name);
         com = common;
+        this.comPort = comPort;
     }
     
-    public void run() 
+    public synchronized void run() 
     {
         try 
         {
+        	short[] currentPacket;
 	        while(!Thread.interrupted())	// Send all packets until queue runs out, sleep, check for more, repeat
 	        {
-	        	sleep(20);
+	        	currentPacket = com.popSerialPacketToSend();
+	        	while(currentPacket != null)
+	        	{
+	        		sendPacket(currentPacket);
+	        		currentPacket = com.popSerialPacketToSend();
+	        	}
+	        	sleep(20);	// take a break once in a while to free up processing
 	        }
         } 
         catch (Exception e) 
@@ -44,10 +53,20 @@ public class SerialThread extends Thread
         	System.err.println("Some sort of exception in SerialThread, Horror of Horrors!");
             e.printStackTrace();
         }
-        serial.close();
+        broadcast.close();
     }
     
-    public synchronized void update()
+    public synchronized void startSerial()
+    {
+    	broadcast = new BroadcastSerial(comPort);
+    }
+    
+    public synchronized void stopSerial()
+    {
+	    broadcast.close();
+		broadcast = null;
+    }
+    /*public synchronized void update()
     {
     	if(serial.recieving)
     	{
@@ -64,6 +83,6 @@ public class SerialThread extends Thread
     			ServerMain.requestPacket(HeaderType.armGripperCommand, 0,true);
     		// don't use gripper input yet
     	}
-    }
+    }*/
 
 }

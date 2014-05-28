@@ -13,7 +13,7 @@ import gnu.io.SerialPortEventListener;
 import java.util.Enumeration;
 
 //DISCLAMER: I pretty much just copied this straight from the web and made a few tweaks for what i want
-public class SerialTest implements SerialPortEventListener {
+public class PuppetSerial implements SerialPortEventListener {
     SerialPort serialPort;
     int turret = 0,
     		shoulder = 0,
@@ -95,7 +95,7 @@ public class SerialTest implements SerialPortEventListener {
         }
     }
 
-    public SerialTest(String ncom){
+    public PuppetSerial(String ncom){
         if(Integer.parseInt(ncom)>=3 && Integer.parseInt(ncom)<=9)
             PORT_NAMES[2] = "COM" + ncom;
         initialize();

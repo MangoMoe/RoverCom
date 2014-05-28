@@ -30,18 +30,25 @@ public class ServerMain implements Runnable
 	private static String address = "Medallion";	// default address
 	
 	// Threads
-	InputThread input;
-	BroadcastThread output;
-	//SerialThread serialT;
+	//InputThread input;
+	//BroadcastThread output;
+	SerialThread serialT;
 	
 	// Logic
 	private static CommonData com;	// must be static for some reason
 	private XboxController xc;
 	private XboxControllerHandler handler;
-	private SerialTest serial;
+	private PuppetSerial puppet;
+	//private BroadcastSerial broadcast;
 	
 	private static boolean brake = false;	// figure out how to make this non-static
-	String comPort;
+	String broadcastComPort;
+	String puppetComPort;
+	
+	
+	private static int driveAll,driveLeft,driveRight,armTurret,
+		armShoulder,armElbow,armWristFlap,armWristRotate,armGripper,armRotator;
+	private static boolean useDriveAll, useArm;
 	
 	// Structure/required to run
 	private Keyboard keyboard;
@@ -64,8 +71,10 @@ public class ServerMain implements Runnable
     	
     	System.out.println("Enter name (ex HAL1) or ip address of host to broadcast to: ");
 		address = reader.nextLine();
-		System.out.println("Enter Com Port Number (should probably be 5): ");
-		comPort = reader.nextLine();
+		System.out.println("Enter Broadcast Com Port Number (should probably be 5): ");
+		broadcastComPort = reader.nextLine();
+		System.out.println("Enter Puppet Com Port Number (should probably be 5): ");
+		puppetComPort = reader.nextLine();
 		
 		reader.close();
 		
@@ -109,18 +118,18 @@ public class ServerMain implements Runnable
 		try
 		{
 			// Start Threads
-			input = new InputThread(com);
+			/*input = new InputThread(com);
 			input.start();
 			output = new BroadcastThread(com, address);
-			output.start();
-			//serialT = new SerialThread(com);
-			//serialT.start();
+			output.start();*/
+			serialT = new SerialThread(com,broadcastComPort);
+			serialT.start();
 			
 			// Graphics type threads
 			running = true;
 			thread = new Thread(this, "Display"); //new thread to hold gui
 	        thread.start();
-		} catch(IOException e)
+		} catch(Exception e)
 		{
 			System.out.println("ServerMain had an IO exception while trying to start threads");
 			e.printStackTrace();
@@ -129,14 +138,15 @@ public class ServerMain implements Runnable
 	
 	public void startSerial()
 	{
-
-    	serial = new SerialTest(comPort);
+		serialT.startSerial();
+    	puppet = new PuppetSerial(puppetComPort);
 	}
 	
 	public void stopSerial()
 	{
-		serial.close();
-		serial = null;
+		puppet.close();
+		puppet = null;
+		serialT.stopSerial();
 		System.out.println("Serial Comms Stopped");
 	}
 	
@@ -146,17 +156,17 @@ public class ServerMain implements Runnable
 		
 		xc.release();	// release xbox controller (part of cleanup)
 		
-		if(serial != null)
-			serial.close();	// close serial input
+		if(puppet != null)
+			puppet.close();	// close serial input
 		
-		input.interrupt();	// interrupt the inputThread to shut it down
-    	output.interrupt();
-    	//serialT.interrupt();
+//		input.interrupt();	// interrupt the inputThread to shut it down
+//    	output.interrupt();
+    	serialT.interrupt();
     	
     	try {
-			input.join();	// wait for other threads to close
-			output.join();
-			//serialT.join();
+//			input.join();	// wait for other threads to close
+//			output.join();
+			serialT.join();
 			thread.join();
 		} catch (InterruptedException e) {
 			System.out.println("ServerMain interrupted while attempting to join threads");
@@ -180,6 +190,7 @@ public class ServerMain implements Runnable
             while(delta >= 1)
             {
                 update();
+                sendSerialPacket();
                 updates++;
                 delta--;
             } //limited to updating 60 times per second
@@ -218,15 +229,15 @@ public class ServerMain implements Runnable
     	{
     		accessor.setData(header,data,overrideAdditivity);
 	    	//header.setCurrentValue(data,overrideAdditivity);	// set new value
-	    	data = header.getCurrentValue();	// setting value has validation, so get validated value
+	    	//data = header.getCurrentValue();	// setting value has validation, so get validated value
 	    	
 	    	if(header.equals(HeaderType.driveAll) && data == 1500)	// we are sending a stop packet, turn on brake
 	    		brake = true;
 	    	
-	    	if(!(brake && (header.getByte() & (byte)0xF0) == (byte)0x10 && data != 1500))	// if we're braking don't send packets to move wheels
+	    	/*if(!(brake && (header.getByte() & (byte)0xF0) == (byte)0x10 && data != 1500))	// if we're braking don't send packets to move wheels
 	    	{
-		    	createPacket(header, data);
-	    	}
+		    	createSerialPacket(header, data);
+	    	}*/
     	}
     }
     
@@ -239,6 +250,44 @@ public class ServerMain implements Runnable
     	buffer.flip();
     	
     	com.addPacketToSend(buffer.array());
+    }
+    
+    /*private static void createSerialPacket(HeaderType header, int data)	// add data to serial packet to send
+    {
+    	if(header == HeaderType.driveAll)	// figure out whether to send command to all wheels or to each set of wheels individually
+    	{
+    		useDriveAll = true;
+    		driveAll = data;	// should already be validated and a good value
+    	}
+    	else if(header == HeaderType.driveLeft)
+    	{
+    		useDriveAll = false;
+    		driveLeft = data;
+    	}
+    	else if(header == HeaderType.driveRight)
+    	{
+    		useDriveAll = false;
+    		driveLeft = data;
+    	}	
+    }*/
+    
+    private void sendSerialPacket()
+    {
+    	short[] packet = new short[7];
+    	if(useArm)
+    	{
+    		packet[0] = (short)armTurret;
+    		packet[1] = (short)armShoulder;
+    		packet[2] = (short)armElbow;
+    		packet[3] = (short)armWristFlap;
+    		packet[4] = (short)armWristRotate;
+    		packet[5] = (short)armGripper;
+    		packet[6] = (short)armRotator;
+    		
+    		com.addSerialPacketToSend(packet);
+    	}
+    	else
+    	{}
     }
     
     //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?
@@ -268,25 +317,25 @@ public class ServerMain implements Runnable
     	//serialT.update();
     	// serial update
     	
-    	if(keyboard.getSerialStop() && !keyboard.getSerialStart() && serial != null)
+    	if(keyboard.getSerialStop() && !keyboard.getSerialStart() && puppet != null)
     	{
     		stopSerial();
     	}
-    	else if(keyboard.getSerialStart() && !keyboard.getSerialStop() && serial == null)
+    	else if(keyboard.getSerialStart() && !keyboard.getSerialStop() && puppet == null)
     	{
     		startSerial();
     	}
     	
-    	if(serial != null && serial.recieving)
+    	if(puppet != null && puppet.recieving)
     	{
-    		ServerMain.requestPacket(HeaderType.armTurretCommand, (int)((double)(serial.turret - 75) * (65536.0 / (950.0 - 75.0))) ,true);
-    		ServerMain.requestPacket(HeaderType.armShoulderCommand, (int)((double)(serial.shoulder - 465) * (65536.0 / (830.0 - 465.0))),true);
-    		ServerMain.requestPacket(HeaderType.armElbowCommand, (int)((double)(serial.elbow - 160) * (65536.0 / (860.0 - 160.0))),true);
-    		ServerMain.requestPacket(HeaderType.armWristRotateCommand, (int)((double)(serial.wristRotate - 200) * (65536.0 / (820.0 - 200.0))),true);
-    		ServerMain.requestPacket(HeaderType.armWristFlapCommand, (int)((double)(serial.wristPitch - 200) * (65536.0 / (820.0 - 200.0))),true);
-    		if(serial.gripper < 100)	// close gripper
+    		ServerMain.requestPacket(HeaderType.armTurretCommand, (int)((double)(puppet.turret - 75) * (65536.0 / (950.0 - 75.0))) ,true);
+    		ServerMain.requestPacket(HeaderType.armShoulderCommand, (int)((double)(puppet.shoulder - 465) * (65536.0 / (830.0 - 465.0))),true);
+    		ServerMain.requestPacket(HeaderType.armElbowCommand, (int)((double)(puppet.elbow - 160) * (65536.0 / (860.0 - 160.0))),true);
+    		ServerMain.requestPacket(HeaderType.armWristRotateCommand, (int)((double)(puppet.wristRotate - 200) * (65536.0 / (820.0 - 200.0))),true);
+    		ServerMain.requestPacket(HeaderType.armWristFlapCommand, (int)((double)(puppet.wristPitch - 200) * (65536.0 / (820.0 - 200.0))),true);
+    		if(puppet.gripper < 100)	// close gripper
     			ServerMain.requestPacket(HeaderType.armGripperCommand, 1, true);
-    		else if (serial.gripper > 700)	// open gripper
+    		else if (puppet.gripper > 700)	// open gripper
     			ServerMain.requestPacket(HeaderType.armGripperCommand, 2, true);
     		else	// gripper neutral
     			ServerMain.requestPacket(HeaderType.armGripperCommand, 0,true);
@@ -294,28 +343,28 @@ public class ServerMain implements Runnable
     	}
     	
     	// interperet all recieved packets so far
-    	byte[] input = com.popRecievedPacket();
+    	/*byte[] input = com.popRecievedPacket();
     	HeaderType header;
     	while(input != null)
     	{
 	        header = HeaderType.getHeader(input[0]);
 	        header.setCurrentValue(getValue(input),true);
-	        /*if(header.getPairing() != null)	// set value of logical pairing
+	        if(header.getPairing() != null)	// set value of logical pairing
 	        {
 	        	header.getPairing().setCurrentValue((int)((double)header.getCurrentValue() * ((double) header.getPairing().getMax() / (double) header.getMax())));
-	        }*/
+	        }
 	        input = com.popRecievedPacket();
-    	}
+    	}*/
     	
     }
-    private void render()
+    /*private void render()
     {
-    	/*SwingUtilities.invokeLater(new Runnable(){
+    	SwingUtilities.invokeLater(new Runnable(){
     		@Override
     		public void run(){
     			GUIFrame.updateDisplay();
     		}
-    	});*/
-    }
+    	});
+    }*/
     
 }

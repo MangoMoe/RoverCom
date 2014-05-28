@@ -8,6 +8,7 @@ public class CommonData	// this class will hold all of the data passed between t
 	
 	ConcurrentLinkedQueue<byte[]> packetsRecieved;
 	ConcurrentLinkedQueue<byte[]> packetsToSend;
+	ConcurrentLinkedQueue<short[]> serialPacketsToSend;
 	
 	
 	
@@ -15,6 +16,7 @@ public class CommonData	// this class will hold all of the data passed between t
 	{
 		packetsRecieved = new ConcurrentLinkedQueue<byte[]>();
 		packetsToSend = new ConcurrentLinkedQueue<byte[]>();
+		serialPacketsToSend = new ConcurrentLinkedQueue<short[]>();
 	}
 	
 	public synchronized void addRecievedPacket(byte[] data)
@@ -37,5 +39,16 @@ public class CommonData	// this class will hold all of the data passed between t
 	public synchronized byte[] popPacketToSend()	// use a get packet instead or in addition to
 	{
 		return packetsToSend.poll();
+	}
+	
+	public synchronized void addSerialPacketToSend(short[] data)
+	{
+		serialPacketsToSend.add(data.clone());	// must copy data into new byte array because data is really a pointer to a buffer
+											// so if we use data itself (a pointer), all entries will be whatever that buffer currently is
+	}
+	
+	public synchronized short[] popSerialPacketToSend()	// use a get packet instead or in addition to
+	{
+		return serialPacketsToSend.poll();
 	}
 }
