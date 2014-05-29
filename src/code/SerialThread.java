@@ -23,6 +23,7 @@ public class SerialThread extends Thread
     protected CommonData com = null;	// concurrency object for data transfer between threads
     private String comPort;
     public static final int PACKET_SIZE = 12;
+    public static final int MESSAGE_SIZE = 31;
     
     private static final byte START1 = (byte)'$',START2 = (byte)'H',START3 = (byte)'A',START4 = (byte)'L',START5 = (byte)'R',START6 = (byte)'V',START7 = (byte)'R',
     		STOP = (byte)0xFE,ESCAPE = (byte)0xEE;
@@ -71,15 +72,16 @@ public class SerialThread extends Thread
     private void sendPacket(short[] data)
     {
     	byte curByte;
+    	byte[] message = new byte[MESSAGE_SIZE];
     	if(data.length == PACKET_SIZE && broadcast != null)	// only use on valid length data
     	{
-    		broadcast.send(START1);
-    		broadcast.send(START2);
-    		broadcast.send(START3);
-    		broadcast.send(START4);
-    		broadcast.send(START5);
-    		broadcast.send(START6);
-    		broadcast.send(START7);
+    		message[0] = (START1);
+    		message[1] = (START2);
+    		message[2] = (START3);
+    		message[3] = (START4);
+    		message[4] = (START5);
+    		message[5] = (START6);
+    		message[6] = (START7);
     		System.out.println("Sent start byte sequence" /*+ String.format("%02x", START1 & 0xff)*/);
     		for(int i = 0; i < PACKET_SIZE; i++)
     		{
@@ -89,7 +91,7 @@ public class SerialThread extends Thread
     				broadcast.send(ESCAPE);	// send escape byte
     				System.out.print(String.format("%02x", ESCAPE & 0xff) + " ");
     			}*/
-    			broadcast.send(curByte);
+    			message[7 + 2*i] = (curByte);
     			System.out.print(String.format("%02x", curByte & 0xff) + " ");
     			
     			curByte = (byte) (data[i]);
@@ -98,11 +100,12 @@ public class SerialThread extends Thread
     				broadcast.send(ESCAPE);	// send escape byte
     				System.out.print(String.format("%02x", ESCAPE & 0xff) + " ");
     			}*/
-    			broadcast.send(curByte);
+    			message[8 + 2*i] = (curByte);
     			System.out.print(String.format("%02x", curByte & 0xff) + " ");
     			
     			System.out.println("  Sent " + (i/* + 1*/) + "th chunk of data");
     		}
+    		broadcast.send(message);
     		/*broadcast.send(STOP);
     		System.out.println("Sent stop byte: " + String.format("%02x", STOP & 0xff));*/
     	}

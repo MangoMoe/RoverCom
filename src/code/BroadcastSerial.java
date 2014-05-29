@@ -112,7 +112,7 @@ public class BroadcastSerial implements SerialPortEventListener
 	    public void stopMessage()
 	    {}*/
 	    
-	    public synchronized void send(byte b)
+	    public synchronized void send(byte[] b)
 	    {
 	        try{
 	            output.write(b);	// send as a  bit number
