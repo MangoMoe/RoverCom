@@ -22,8 +22,10 @@ public class SerialThread extends Thread
 	BroadcastSerial broadcast;
     protected CommonData com = null;	// concurrency object for data transfer between threads
     private String comPort;
+    public static final int PACKET_SIZE = 12;
     
-    private static final byte START = (byte)0xFF,STOP = (byte)0xFE,ESCAPE = (byte)0xEE;
+    private static final byte START1 = (byte)'$',START2 = (byte)'H',START3 = (byte)'A',START4 = (byte)'L',START5 = (byte)'R',START6 = (byte)'V',START7 = (byte)'R',
+    		STOP = (byte)0xFE,ESCAPE = (byte)0xEE;
 
     public SerialThread(CommonData common, String comPort) throws IOException {
     	this("Puppet Serial Input Thread", common,comPort);
@@ -69,35 +71,40 @@ public class SerialThread extends Thread
     private void sendPacket(short[] data)
     {
     	byte curByte;
-    	if(data.length == 7 && broadcast != null)	// only use on valid length data
+    	if(data.length == PACKET_SIZE && broadcast != null)	// only use on valid length data
     	{
-    		broadcast.send(START);
-    		System.out.println("Sent start byte: " + String.format("%02x", START & 0xff));
-    		for(int i = 0; i < 7; i++)
+    		broadcast.send(START1);
+    		broadcast.send(START2);
+    		broadcast.send(START3);
+    		broadcast.send(START4);
+    		broadcast.send(START5);
+    		broadcast.send(START6);
+    		broadcast.send(START7);
+    		System.out.println("Sent start byte sequence" /*+ String.format("%02x", START1 & 0xff)*/);
+    		for(int i = 0; i < PACKET_SIZE; i++)
     		{
     			curByte = (byte) (data[i] >> 8);
-    			if(curByte == START || curByte == STOP || curByte == ESCAPE)	// send escape byte if necessary (bytestuffed protocol)
-    				
+    			/*if(curByte == START || curByte == STOP || curByte == ESCAPE)	// send escape byte if necessary (bytestuffed protocol)
     			{
     				broadcast.send(ESCAPE);	// send escape byte
     				System.out.print(String.format("%02x", ESCAPE & 0xff) + " ");
-    			}
+    			}*/
     			broadcast.send(curByte);
     			System.out.print(String.format("%02x", curByte & 0xff) + " ");
     			
     			curByte = (byte) (data[i]);
-    			if(curByte == START || curByte == STOP || curByte == ESCAPE)
+    			/*if(curByte == START || curByte == STOP || curByte == ESCAPE)
     			{
     				broadcast.send(ESCAPE);	// send escape byte
     				System.out.print(String.format("%02x", ESCAPE & 0xff) + " ");
-    			}
+    			}*/
     			broadcast.send(curByte);
     			System.out.print(String.format("%02x", curByte & 0xff) + " ");
     			
     			System.out.println("  Sent " + (i/* + 1*/) + "th chunk of data");
     		}
-    		broadcast.send(STOP);
-    		System.out.println("Sent stop byte: " + String.format("%02x", STOP & 0xff));
+    		/*broadcast.send(STOP);
+    		System.out.println("Sent stop byte: " + String.format("%02x", STOP & 0xff));*/
     	}
     }
     

@@ -76,10 +76,11 @@ public class BroadcastSerial implements SerialPortEventListener
 	    	// ignore serial port events?
 	        /*if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 	            try {
-
+	            	System.out.println("DATA_AVAILABLE");
 	                String inputLine=null;
 	                if (input.ready()) {
 	                    inputLine = input.readLine();
+	                    System.err.println(inputLine);
 	                    //read(inputLine);
 	                }
 
@@ -117,7 +118,7 @@ public class BroadcastSerial implements SerialPortEventListener
 	            output.write(b);	// send as a  bit number
 	        }
 	        catch (Exception e) {
-//	            e.printStackTrace();
+	            //e.printStackTrace();
 	        }
 	    }
 

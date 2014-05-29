@@ -58,9 +58,9 @@ public class WestPanel extends JPanel {
 		case (byte)0x25:	// gripper command
 			int i = header.getCurrentValue();
 			String str1 = "Neutral";
-			if(i == 1)
+			if(i < 1500)
 				str1 = "Closing";
-			else if (i == 2)
+			else if (i > 1500)
 				str1 = "Opening";
 			armDataModel.setValueAt(str1, 6, 1);
 			break;

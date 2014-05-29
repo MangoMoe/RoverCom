@@ -116,8 +116,8 @@ public class ServerMain implements Runnable
 		{
 			accessor.setData(header, (header.getMax() + header.getMin()) / 2, true);
 		}
-		accessor.setData(HeaderType.armGripperCommand, 0, true);	// manually set these values to zero (so the gripper and roataor aren't on by default)
-		accessor.setData(HeaderType.armRotatorCommand, 0, true);
+		/*accessor.setData(HeaderType.armGripperCommand, 0, true);	// manually set these values to zero (so the gripper and roataor aren't on by default)
+		accessor.setData(HeaderType.armRotatorCommand, 0, true);*/
 	}
 	
 	public void startSerial()
@@ -298,34 +298,28 @@ public class ServerMain implements Runnable
     
     private void sendSerialPacket()
     {
-    	short[] packet = new short[7];
-    	if(useArm)
-    	{
-    		packet[0] = (short)armTurret;
-    		packet[1] = (short)armShoulder;
-    		packet[2] = (short)armElbow;
-    		packet[3] = (short)armWristFlap;
-    		packet[4] = (short)armWristRotate;
-    		packet[5] = (short)armGripper;
-    		packet[6] = (short)armRotator;
-    	}
-    	else
-    	{
-    		if (useDriveAll || brake)
-    		{
-    			packet[0] = (short)HeaderType.driveAll.getCurrentValue();	// drive left
-    			packet[1] = (short)HeaderType.driveAll.getCurrentValue();	// drive right
-    		}
-    		else
-    		{
-    			packet[0] = (short)HeaderType.driveLeft.getCurrentValue();	// drive left
-    			packet[1] = (short)HeaderType.driveRight.getCurrentValue();	// drive right
-    		}
-    		packet[2] = (short)HeaderType.gimbalYaw.getCurrentValue();	// gimbal yaw
-    		packet[3] = (short)HeaderType.gimbalPitch.getCurrentValue();	// gimbal pitch
-    		packet[4] = (short)HeaderType.camera.getCurrentValue();	// camera selector
-    	}
-		
+    	short[] packet = new short[12];
+    	
+		if (useDriveAll || brake)
+		{
+			packet[0] = (short)HeaderType.driveAll.getCurrentValue();	// drive left
+			packet[1] = (short)HeaderType.driveAll.getCurrentValue();	// drive right
+		}
+		else
+		{
+			packet[0] = (short)HeaderType.driveLeft.getCurrentValue();	// drive left
+			packet[1] = (short)HeaderType.driveRight.getCurrentValue();	// drive right
+		}
+		packet[2] = (short)HeaderType.gimbalYaw.getCurrentValue();	// gimbal yaw
+		packet[3] = (short)HeaderType.gimbalPitch.getCurrentValue();	// gimbal pitch
+		packet[4] = (short)HeaderType.camera.getCurrentValue();	// camera selector
+    	packet[5] = (short)HeaderType.armTurretCommand.getCurrentValue();
+		packet[6] = (short)HeaderType.armShoulderCommand.getCurrentValue();
+		packet[7] = (short)HeaderType.armElbowCommand.getCurrentValue();
+		packet[8] = (short)HeaderType.armWristRotateCommand.getCurrentValue();
+		packet[9] = (short)HeaderType.armWristFlapCommand.getCurrentValue();
+		packet[10] = (short)HeaderType.armGripperCommand.getCurrentValue();
+		packet[11] = (short)HeaderType.armRotatorCommand.getCurrentValue();
 		com.addSerialPacketToSend(packet);	// send packet to be sent
     }
     
@@ -373,11 +367,11 @@ public class ServerMain implements Runnable
     		ServerMain.requestPacket(HeaderType.armWristRotateCommand, (int)((double)(puppet.wristRotate - 200) * (65536.0 / (820.0 - 200.0))),true);
     		ServerMain.requestPacket(HeaderType.armWristFlapCommand, (int)((double)(puppet.wristPitch - 200) * (65536.0 / (820.0 - 200.0))),true);
     		if(puppet.gripper < 100)	// close gripper
-    			ServerMain.requestPacket(HeaderType.armGripperCommand, 1, true);
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 1000, true);
     		else if (puppet.gripper > 700)	// open gripper
-    			ServerMain.requestPacket(HeaderType.armGripperCommand, 2, true);
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 2000, true);
     		else	// gripper neutral
-    			ServerMain.requestPacket(HeaderType.armGripperCommand, 0,true);
+    			ServerMain.requestPacket(HeaderType.armGripperCommand, 1500,true);
     		// don't use gripper input yet
     	}
     	

@@ -12,17 +12,14 @@ armShoulderCommand	0	65535	true		the puppet is already configured to send all th
 armElbowCommand		0	65535	true 
 armWristFlapCommand	0	65535	true
 armWristRotateCommand	0	65535	true
-armGripperCommand	0	2	false		0 is neutral, 1 is close gripper, 2 is open gripper
-armRotatorCommand	0	2	false		0 is neutral, 1 is clockwise?, 2 is counterclockwise?
+armGripperCommand	1000	2000	false		0 is neutral, 1 is close gripper, 2 is open gripper
+armRotatorCommand	1000	2000	false		0 is neutral, 1 is clockwise?, 2 is counterclockwise?
 
 //gimbal commands
 gimbalYaw		1000	2000	true		For gimbal commands: 1000 is fully left?, 2000 is fully right?, 1500 is straight ahead
 gimbalPitch		1000	2000	true
 
 //camera commands
-camera			1	6	false		send a number 1-6 to switch to that camera
-
-//battery commands
-boost			0	1	false		1 is on, 0 is off
+camera			1000	2000	false		send a number 1-6 to switch to that camera
 
 *This means whether or not the number mapped to the control is added to the current value of the attribute (true), like an arm angle or set as the value (false), such as a drive speed
