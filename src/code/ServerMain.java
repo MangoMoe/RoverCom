@@ -48,7 +48,7 @@ public class ServerMain implements Runnable
 	
 	private static int driveAll,driveLeft,driveRight,armTurret,
 		armShoulder,armElbow,armWristFlap,armWristRotate,armGripper,armRotator;
-	private static boolean useDriveAll, useArm;
+	private static boolean useDriveAll, useArm = false;
 	
 	// Structure/required to run
 	private Keyboard keyboard;
@@ -71,9 +71,9 @@ public class ServerMain implements Runnable
     	
     	System.out.println("Enter name (ex HAL1) or ip address of host to broadcast to: ");
 		address = reader.nextLine();
-		System.out.println("Enter Broadcast Com Port Number (should probably be 5): ");
+		System.out.println("Enter Broadcast Com Port Number: ");
 		broadcastComPort = reader.nextLine();
-		System.out.println("Enter Puppet Com Port Number (should probably be 5): ");
+		System.out.println("Enter Puppet Com Port Number: ");
 		puppetComPort = reader.nextLine();
 		
 		reader.close();
@@ -81,19 +81,21 @@ public class ServerMain implements Runnable
     	xc = new XboxController();
     	if (!xc.isConnected())	// if xbox controller not connected tell error
         {
-          JOptionPane.showMessageDialog(null, 
+          /*JOptionPane.showMessageDialog(null, 
             "Xbox controller not connected. Press F2 at any time to update keyboard mappings.",
             "Startup Information", 
-            JOptionPane.WARNING_MESSAGE);
+            JOptionPane.WARNING_MESSAGE);*/
+    		System.out.println("Xbox controller not connected. Press F2 at any time to update keyboard mappings.");
           xc.release();
           ControllerConnected = false;
         }
     	else
     	{
-    		JOptionPane.showMessageDialog(null,
+    		/*JOptionPane.showMessageDialog(null,
     				"Xbox controller successfully connected. Press the escape key at any time to switch to keyboard input or press F1 to switch back to controller. Press F2 at any time to update input mappings.", 
     				"Startup Information",
-    				JOptionPane.WARNING_MESSAGE);
+    				JOptionPane.WARNING_MESSAGE);*/
+    		System.out.println("Xbox controller successfully connected. Press the escape key at any time to switch to keyboard input or press F1 to switch back to controller. Press F2 at any time to update input mappings.");
     		ControllerConnected = true;
     		xc.addXboxControllerListener(XboxControllerHandler.initializeAdapter(xc));	// initialize input
     	}
@@ -110,7 +112,26 @@ public class ServerMain implements Runnable
     		}
     	});
     	//GUIFrame.addKeyListener(keyboard);	// add listener to take keyboard input (this overridden method adds the listener to all components of the GUIFrame)
-		
+		for(HeaderType header : HeaderType.values())
+		{
+			accessor.setData(header, (header.getMax() + header.getMin()) / 2, true);
+		}
+		accessor.setData(HeaderType.armGripperCommand, 0, true);	// manually set these values to zero (so the gripper and roataor aren't on by default)
+		accessor.setData(HeaderType.armRotatorCommand, 0, true);
+	}
+	
+	public void startSerial()
+	{
+		com.startSerial();
+    	puppet = new PuppetSerial(puppetComPort);
+	}
+	
+	public void stopSerial()
+	{
+		puppet.close();
+		puppet = null;
+		com.stopSerial();
+		System.out.println("Serial Comms Stopped");
 	}
 	
 	public synchronized void start()
@@ -136,19 +157,7 @@ public class ServerMain implements Runnable
 		}
 	}
 	
-	public void startSerial()
-	{
-		serialT.startSerial();
-    	puppet = new PuppetSerial(puppetComPort);
-	}
 	
-	public void stopSerial()
-	{
-		puppet.close();
-		puppet = null;
-		serialT.stopSerial();
-		System.out.println("Serial Comms Stopped");
-	}
 	
 	public synchronized void stop()
 	{
@@ -218,8 +227,6 @@ public class ServerMain implements Runnable
     {
     	// instantiate new instance of this class
     	ServerMain Interface = new ServerMain();	// come up with better name?
-    	
-    	
     	Interface.start();
     }
     
@@ -231,8 +238,26 @@ public class ServerMain implements Runnable
 	    	//header.setCurrentValue(data,overrideAdditivity);	// set new value
 	    	//data = header.getCurrentValue();	// setting value has validation, so get validated value
 	    	
+	    	
+	    	if(header == HeaderType.driveAll && !brake)	// figure out whether to send command to all wheels or to each set of wheels individually
+	    	{
+	    		useDriveAll = true;
+	    		driveAll = data;	// should already be validated and a good value
+	    	}
 	    	if(header.equals(HeaderType.driveAll) && data == 1500)	// we are sending a stop packet, turn on brake
+	    	{
 	    		brake = true;
+	    	}
+	    	else if(header == HeaderType.driveLeft && !brake)
+	    	{
+	    		useDriveAll = false;
+	    		driveLeft = data;
+	    	}
+	    	else if(header == HeaderType.driveRight && !brake)
+	    	{
+	    		useDriveAll = false;
+	    		driveLeft = data;
+	    	}	
 	    	
 	    	/*if(!(brake && (header.getByte() & (byte)0xF0) == (byte)0x10 && data != 1500))	// if we're braking don't send packets to move wheels
 	    	{
@@ -283,11 +308,25 @@ public class ServerMain implements Runnable
     		packet[4] = (short)armWristRotate;
     		packet[5] = (short)armGripper;
     		packet[6] = (short)armRotator;
-    		
-    		com.addSerialPacketToSend(packet);
     	}
     	else
-    	{}
+    	{
+    		if (useDriveAll || brake)
+    		{
+    			packet[0] = (short)HeaderType.driveAll.getCurrentValue();	// drive left
+    			packet[1] = (short)HeaderType.driveAll.getCurrentValue();	// drive right
+    		}
+    		else
+    		{
+    			packet[0] = (short)HeaderType.driveLeft.getCurrentValue();	// drive left
+    			packet[1] = (short)HeaderType.driveRight.getCurrentValue();	// drive right
+    		}
+    		packet[2] = (short)HeaderType.gimbalYaw.getCurrentValue();	// gimbal yaw
+    		packet[3] = (short)HeaderType.gimbalPitch.getCurrentValue();	// gimbal pitch
+    		packet[4] = (short)HeaderType.camera.getCurrentValue();	// camera selector
+    	}
+		
+		com.addSerialPacketToSend(packet);	// send packet to be sent
     }
     
     //private static byte[] createPacket(String header, byte data){return new byte[0];}	// not needed?

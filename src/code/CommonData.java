@@ -4,19 +4,50 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CommonData	// this class will hold all of the data passed between threads
 {
-	private
+	private ConcurrentLinkedQueue<byte[]> packetsRecieved;
+	private ConcurrentLinkedQueue<byte[]> packetsToSend;
+	private ConcurrentLinkedQueue<short[]> serialPacketsToSend;
 	
-	ConcurrentLinkedQueue<byte[]> packetsRecieved;
-	ConcurrentLinkedQueue<byte[]> packetsToSend;
-	ConcurrentLinkedQueue<short[]> serialPacketsToSend;
-	
-	
+	private boolean startSerial,stopSerial;
 	
 	CommonData()	// initialize all class variables above!
 	{
 		packetsRecieved = new ConcurrentLinkedQueue<byte[]>();
 		packetsToSend = new ConcurrentLinkedQueue<byte[]>();
 		serialPacketsToSend = new ConcurrentLinkedQueue<short[]>();
+	}
+	
+	public synchronized void startSerial()
+	{
+		startSerial = true;
+		serialPacketsToSend = new ConcurrentLinkedQueue<short[]>();	// clear this queue so we don't have buildup while serial is off
+	}
+	
+	public synchronized void stopSerial()
+	{
+		stopSerial = true;
+	}
+	
+	public synchronized boolean getStartSerial()
+	{
+		if(startSerial)
+		{
+			startSerial = false;	// clear flag
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public synchronized boolean getStopSerial()
+	{
+		if(stopSerial)
+		{
+			stopSerial = false;	// clear flag
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	public synchronized void addRecievedPacket(byte[] data)

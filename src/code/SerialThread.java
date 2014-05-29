@@ -1,7 +1,8 @@
 package code;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+
+/*import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
@@ -13,7 +14,7 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent; 
 import gnu.io.SerialPortEventListener; 
 
-import java.util.Enumeration;
+import java.util.Enumeration;*/
 
 
 public class SerialThread extends Thread 
@@ -21,6 +22,8 @@ public class SerialThread extends Thread
 	BroadcastSerial broadcast;
     protected CommonData com = null;	// concurrency object for data transfer between threads
     private String comPort;
+    
+    private static final byte START = (byte)0xFF,STOP = (byte)0xFE,ESCAPE = (byte)0xEE;
 
     public SerialThread(CommonData common, String comPort) throws IOException {
     	this("Puppet Serial Input Thread", common,comPort);
@@ -39,13 +42,20 @@ public class SerialThread extends Thread
         	short[] currentPacket;
 	        while(!Thread.interrupted())	// Send all packets until queue runs out, sleep, check for more, repeat
 	        {
-	        	currentPacket = com.popSerialPacketToSend();
-	        	while(currentPacket != null)
+	        	if(com.getStartSerial())	// check for external commands to start or stop serial communications
+	        		startSerial();
+	        	if(com.getStopSerial())
+	        		stopSerial();
+	        	if(broadcast != null)	// only send stuff if serial is on
 	        	{
-	        		sendPacket(currentPacket);
-	        		currentPacket = com.popSerialPacketToSend();
+		        	currentPacket = com.popSerialPacketToSend();
+		        	while(currentPacket != null)
+		        	{
+		        		sendPacket(currentPacket);
+		        		currentPacket = com.popSerialPacketToSend();
+		        	}
+		        	sleep(20);	// take a break once in a while to free up processing
 	        	}
-	        	sleep(20);	// take a break once in a while to free up processing
 	        }
         } 
         catch (Exception e) 
@@ -54,6 +64,41 @@ public class SerialThread extends Thread
             e.printStackTrace();
         }
         broadcast.close();
+    }
+    
+    private void sendPacket(short[] data)
+    {
+    	byte curByte;
+    	if(data.length == 7 && broadcast != null)	// only use on valid length data
+    	{
+    		broadcast.send(START);
+    		System.out.println("Sent start byte: " + String.format("%02x", START & 0xff));
+    		for(int i = 0; i < 7; i++)
+    		{
+    			curByte = (byte) (data[i] >> 8);
+    			if(curByte == START || curByte == STOP || curByte == ESCAPE)	// send escape byte if necessary (bytestuffed protocol)
+    				
+    			{
+    				broadcast.send(ESCAPE);	// send escape byte
+    				System.out.print(String.format("%02x", ESCAPE & 0xff) + " ");
+    			}
+    			broadcast.send(curByte);
+    			System.out.print(String.format("%02x", curByte & 0xff) + " ");
+    			
+    			curByte = (byte) (data[i]);
+    			if(curByte == START || curByte == STOP || curByte == ESCAPE)
+    			{
+    				broadcast.send(ESCAPE);	// send escape byte
+    				System.out.print(String.format("%02x", ESCAPE & 0xff) + " ");
+    			}
+    			broadcast.send(curByte);
+    			System.out.print(String.format("%02x", curByte & 0xff) + " ");
+    			
+    			System.out.println("  Sent " + (i/* + 1*/) + "th chunk of data");
+    		}
+    		broadcast.send(STOP);
+    		System.out.println("Sent stop byte: " + String.format("%02x", STOP & 0xff));
+    	}
     }
     
     public synchronized void startSerial()

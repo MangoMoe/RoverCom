@@ -51,7 +51,7 @@ public class BroadcastSerial implements SerialPortEventListener
 	            }
 	        }
 	        if (portId == null) {
-	            System.out.println("Could not find COM port.");
+	            System.out.println("Could not find broadcast COM port.");
 	            return;
 	        }
 
@@ -102,22 +102,22 @@ public class BroadcastSerial implements SerialPortEventListener
 	            PORT_NAMES[2] = "COM" + ncom;
 	        initialize();
 	       
-	        System.out.println("Serial Comms Started");
+	        System.out.println("Broadcast Serial Comms Started");
 	    }
 	    
-	    public void startMessage()
+	    /*public void startMessage()
 	    {}
 	    
 	    public void stopMessage()
-	    {}
+	    {}*/
 	    
-	    public synchronized void send(int b)
+	    public synchronized void send(byte b)
 	    {
 	        try{
-	            output.write((short)b);	// send as a  bit number
+	            output.write(b);	// send as a  bit number
 	        }
 	        catch (Exception e) {
-	            System.err.println(e.toString());
+//	            e.printStackTrace();
 	        }
 	    }
 

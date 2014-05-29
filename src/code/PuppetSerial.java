@@ -51,7 +51,7 @@ public class PuppetSerial implements SerialPortEventListener {
             }
         }
         if (portId == null) {
-            System.out.println("Could not find COM port.");
+            System.out.println("Could not find puppet COM port.");
             return;
         }
 
@@ -100,7 +100,7 @@ public class PuppetSerial implements SerialPortEventListener {
             PORT_NAMES[2] = "COM" + ncom;
         initialize();
        
-        System.out.println("Serial Comms Started");
+        System.out.println("Puppet Serial Comms Started");
     }
 
     /*public synchronized void send(int b){

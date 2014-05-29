@@ -24,7 +24,7 @@ public enum HeaderType {	// enumeration of udp packet header types for easy acce
 	gimbalYaw(1000,2000,2,(byte)0x30,true,null), gimbalPitch(1000,2000,2,(byte)0x31,true,null),
 	
 	// camera header types
-	camera(1,6,2,(byte)0x40,false,null),
+	camera(1,6,2,(byte)0x40,true,null),
 	
 	// battery header types
 	boost(0,1,2,(byte)0x50,false,null),battery1(0,2048,2,(byte)0x51,false,null),battery2(0,2048,2,(byte)0x52,false,null),battery3(0,2048,2,(byte)0x53,false,null),battery4(0,2048,2,(byte)0x54,false,null),battery5(0,2048,2,(byte)0x55,false,null),battery6(0,2048,2,(byte)0x56,false,null),battery7(0,2048,2,(byte)0x57,false,null),battery8(0,2048,2,(byte)0x58,false,null);
