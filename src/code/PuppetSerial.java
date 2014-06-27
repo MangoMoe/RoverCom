@@ -92,6 +92,7 @@ public class PuppetSerial implements SerialPortEventListener {
         if (serialPort != null) {
             serialPort.removeEventListener();
             serialPort.close();
+            System.out.println("Puppet com port closed");
         }
     }
 

@@ -59,6 +59,10 @@ public class BroadcastSerial implements SerialPortEventListener
 	            serialPort = (SerialPort) portId.open(this.getClass().getName(),TIME_OUT);
 
 	            serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,    SerialPort.PARITY_NONE);
+	            System.out.println("Flow control mode: " + serialPort.getFlowControlMode());
+	            serialPort.setDTR(false);
+	            serialPort.setRTS(true);
+	            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
 
 	            input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
 	            output = serialPort.getOutputStream();
@@ -94,6 +98,7 @@ public class BroadcastSerial implements SerialPortEventListener
 	        if (serialPort != null) {
 	            serialPort.removeEventListener();
 	            serialPort.close();
+	            System.out.println("Broadcast serial port closed");
 	        }
 	    }
 

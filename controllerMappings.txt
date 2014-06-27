@@ -18,10 +18,10 @@ rightTrigger:	driveAll	0		;
 leftThumb:	drive4	1017	drive6	1	;
 rightThumb:	drive4	1018	drive6	1	;
 //left Joystick
-0 90	driveLeft	250	;
-91 270	driveLeft	-250	;
-271 360 driveLeft	250	;
+0 90	driveLeft	500	;
+91 270	driveLeft	-500	;
+271 360 driveLeft	500	;
 //right Joystick
-0 90	driveRight	250	;
-91 270	driveRight	-250	;
-271 360 driveRight	250	;
+0 90	driveRight	500	;
+91 270	driveRight	-500	;
+271 360 driveRight	500	;
